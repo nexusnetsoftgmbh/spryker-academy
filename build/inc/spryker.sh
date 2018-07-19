@@ -21,6 +21,7 @@ function configureRabbitMQ() {
 
 function finalizeSpryker() {
     docker exec -i php chown -Rf www-data:www-data /data
+    docker exec -i php chmod -Rf 0777 /data/shop/development/current/data
 }
 
 function installSpryker() {
