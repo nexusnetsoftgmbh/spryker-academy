@@ -1,24 +1,35 @@
 filter:
   excluded_paths:
-    - "current/tests/"
-    - "current/config/"
-    - "current/data/"
-    - "current/frontend/"
-    - "current/public/"
+    - 'current/assets'
+    - 'current/config'
+    - 'current/data'
+    - 'current/frontend'
+    - 'current/grunt'
+    - 'current/public'
+    - 'current/tests'
+    - 'current/src/Pyz/Zed/DataImport/Business/DataImportBusinessFactory.php'
 
   dependency_paths:
-    - "current/vendor/"
-    - "current/src/Orm"
-    - "current/src/Generated"
+    - 'current/src/Generated/'
+    - 'current/src/Orm/'
+    - 'current/vendor/'
 
 build:
+  root_path: './current'
+
   environment:
-    php: 7.1
+      php: '7.1'
+      node: '8.10.0'
 
-    variables:
-      APPLICATION_ENV: development
-      APPLICATION_STORE: DE
+      variables:
+        APPLICATION_ENV: development
+        APPLICATION_STORE: DE
 
+  dependencies:
+      before:
+          - 'rm -rf ./node_modules'
+          - 'npm cache -f clear'
+          - 'composer remove --dev spryker/git-hook'
 
   tests:
     before:
