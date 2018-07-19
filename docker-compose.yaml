@@ -1,0 +1,130 @@
+version: '3.2'
+services:
+  data:
+    build: ./env/ssh
+    container_name: data
+    image: spryker_data
+    volumes:
+      - projectdata:/data
+    restart: always
+    environment:
+      APPLICATION_ENV: development
+      APPLICATION_STORE: DE
+  php:
+    build: ./env/php
+    container_name: php
+    image: nexusnetsoft/spryker-php-fpm:7.1
+    environment:
+      APPLICATION_ENV: development
+      APPLICATION_STORE: DE
+      PGPASSWORD: mate20mg
+    links:
+      - zed:zed_de
+      - zed:zed_us
+    volumes:
+      - projectdata:/data
+    restart: always
+    depends_on:
+      - data
+  db:
+    image: postgres:9.4.16
+    container_name: db
+    restart: always
+    env_file:
+      - ./env/db.env
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+  redis:
+    image: redis:3.2.11
+    container_name: redis
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+  elasticsearch:
+    image: elasticsearch:5.6.8
+    container_name: elasticsearch
+    restart: always
+    volumes:
+      - ./env/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - elasticdata:/usr/share/elasticsearch/data
+  rabbitmq:
+    image: rabbitmq:3.7.3-management
+    restart: always
+    container_name: rabbitmq
+    env_file:
+      - ./env/rabbitmq.env
+  jenkins:
+    build: ./env/jenkins
+    image: nexusnetsoft/jenkins-php:7.1
+    container_name: jenkins
+    restart: always
+    env_file:
+      - ./env/jenkins.env
+    environment:
+      APPLICATION_ENV: development
+      APPLICATION_STORE: DE
+    links:
+      - zed:zed_de
+      - zed:zed_us
+    depends_on:
+      - data
+    volumes:
+      - projectdata:/data
+  loadbalancer:
+    image: nginx
+    container_name: loadbalancer
+    volumes:
+      - ./env/nginx/loadbalancer.conf:/etc/nginx/conf.d/loadbalancer.conf
+    restart: always
+  yves:
+    image: nginx
+    container_name: yves
+    volumes:
+     - ./env/nginx/yves_de_spryker.conf:/etc/nginx/conf.d/yves_de_spryker.conf
+     - ./env/nginx/yves_de_spryker.conf:/etc/nginx/conf.d/yves_at_spryker.conf
+     - ./env/nginx/yves_de_spryker.conf:/etc/nginx/conf.d/yves_us_spryker.conf
+     - projectdata:/data
+    depends_on:
+      - data
+      - redis
+      - db
+      - elasticsearch
+      - rabbitmq
+    restart: always
+    networks:
+      default:
+        aliases:
+          - "www.de.suite.local"
+          - "www.at.suite.local"
+          - "www.us.suite.local"
+  zed:
+    image: nginx
+    container_name: zed
+    volumes:
+     - ./env/nginx/zed_de_spryker.conf:/etc/nginx/conf.d/zed_de_spryker.conf
+     - ./env/nginx/zed_de_spryker.conf:/etc/nginx/conf.d/zed_at_spryker.conf
+     - ./env/nginx/zed_de_spryker.conf:/etc/nginx/conf.d/zed_us_spryker.conf
+     - projectdata:/data
+    depends_on:
+      - data
+      - redis
+      - db
+      - elasticsearch
+      - rabbitmq
+    restart: always
+    networks:
+      default:
+        aliases:
+          - "zed.de.suite.local"
+          - "zed.at.suite.local"
+          - "zed.us.suite.local"
+volumes:
+  projectdata:
+    external: true
+  elasticdata:
+    external: true
+  redisdata:
+    external: true
+  dbdata:
+    external: true

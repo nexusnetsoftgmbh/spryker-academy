@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config>
+    <!-- You can control navigation order here and add your custom navigation entries -->
+    <sales/>
+    <customer/>
+    <category/>
+    <cms-gui/>
+    <glossary/>
+    <product/>
+    <search-and-filters/>
+    <discount/>
+    <navigation/>
+    <tax/>
+    <shipment/>
+    <acl/>
+    <company-gui/>
+    <maintenance/>
+</config>
