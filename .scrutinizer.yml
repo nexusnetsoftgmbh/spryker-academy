@@ -29,7 +29,6 @@ build:
       before:
           - 'rm -rf ./node_modules'
           - 'npm cache -f clear'
-          - 'composer remove --dev spryker/git-hook'
 
   tests:
     before:
