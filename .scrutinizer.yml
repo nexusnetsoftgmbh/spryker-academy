@@ -14,8 +14,11 @@ filter:
 build:
   environment:
     php: 7.1
-    APPLICATION_ENV: development
-    APPLICATION_STORE: DE
+
+    variables:
+      APPLICATION_ENV: development
+      APPLICATION_STORE: DE
+
 
 tests:
   before:
