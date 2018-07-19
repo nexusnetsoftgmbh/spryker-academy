@@ -20,11 +20,11 @@ build:
       APPLICATION_STORE: DE
 
 
-tests:
-  before:
-    - 'vendor/bin/console transfer:generate'
-  override:
-    - php-scrutinizer-run --enable-security-analysis
+  tests:
+    before:
+      - 'vendor/bin/console transfer:generate'
+    override:
+      - php-scrutinizer-run --enable-security-analysis
 
 checks:
   php:
