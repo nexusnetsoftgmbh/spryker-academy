@@ -1,0 +1,34 @@
+filter:
+  excluded_paths:
+    - "current/tests/"
+    - "current/config/"
+    - "current/data/"
+    - "current/frontend/"
+    - "current/public/"
+
+  dependency_paths:
+    - "current/vendor/"
+    - "current/src/Orm"
+    - "current/src/Generated"
+
+build:
+  environment:
+    php: 7.1
+    APPLICATION_ENV: development
+    APPLICATION_STORE: DE
+
+tests:
+  before:
+    - 'vendor/bin/console transfer:generate'
+  override:
+    - php-scrutinizer-run --enable-security-analysis
+
+checks:
+  php:
+    no_exit: false
+
+coding_style:
+  php:
+    spaces:
+      around_operators:
+        concatenation: true
