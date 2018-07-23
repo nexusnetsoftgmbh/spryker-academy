@@ -9,7 +9,6 @@ echo "Basepath: $BASEDIR"
 
 
 source $BASEDIR/build/inc/docker.sh
-source $BASEDIR/build/inc/dumper.sh
 source $BASEDIR/build/inc/spryker.sh
 source $BASEDIR/build/inc/xdebug.sh
 
