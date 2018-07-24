@@ -5,7 +5,12 @@ namespace Pyz\Zed\NxsHelloSpryker\Business;
 
 use Spryker\Zed\Kernel\Business\AbstractFacade;
 
-class HelloSprykerFacade extends AbstractFacade
+/**
+ * Class NxsHelloSprykerFacade
+ * @package Pyz\Zed\NxsHelloSpryker\Business
+ * @method \Pyz\Zed\NxsHelloSpryker\Business\NxsHelloSprykerBusinessFactory getFactory()()
+ */
+class NxsHelloSprykerFacade extends AbstractFacade
 {
 
     /**

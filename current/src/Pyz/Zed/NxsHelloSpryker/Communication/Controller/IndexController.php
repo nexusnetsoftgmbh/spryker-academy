@@ -3,21 +3,17 @@
 
 namespace Pyz\Zed\NxsHelloSpryker\Communication\Controller;
 
-
-use Pyz\Zed\NxsHelloSpryker\Business\HelloSprykerFacade;
 use Spryker\Zed\Kernel\Communication\Controller\AbstractController;
 
+/**
+ * Class IndexController
+ * @package Pyz\Zed\NxsHelloSpryker\Communication\Controller
+ * @method \Pyz\Zed\NxsHelloSpryker\Business\NxsHelloSprykerFacade getFacade()
+ */
 class IndexController extends AbstractController
 {
-    /** @var HelloSprykerFacade */
-    private $helloSpryker;
-
     public function indexAction()
     {
-        if ($this->helloSpryker === null) {
-            $this->helloSpryker = new HelloSprykerFacade();
-        }
-
-        return ['reversedString' => $this->helloSpryker->getReversedString()];
+        return ['reversedString' => $this->getFacade()->getReversedString()];
     }
 }
