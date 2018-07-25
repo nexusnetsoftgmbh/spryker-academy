@@ -7,7 +7,10 @@
 
 namespace Pyz\Zed\NxsHelloSpryker\Business;
 
+use Pyz\Zed\NxsHelloSpryker\Business\Model\ReadString;
 use Pyz\Zed\NxsHelloSpryker\Business\Model\ReverseString;
+use Pyz\Zed\NxsHelloSpryker\Business\Model\WriteString;
+use Pyz\Zed\NxsHelloSpryker\NxsHelloSprykerDependencyProvider;
 use Spryker\Zed\Kernel\Business\AbstractBusinessFactory;
 
 /**
@@ -22,8 +25,30 @@ class NxsHelloSprykerBusinessFactory extends AbstractBusinessFactory
     public function createHelloSpryker(): ReverseString
     {
         return new ReverseString(
-            $this->getConfig(),
+            $this->createReader(),
+            $this->createWriter(),
+            $this->getProvidedDependency(NxsHelloSprykerDependencyProvider::FACADE_STRING_FORMAT)
+        );
+    }
+
+    /**
+     * @return \Pyz\Zed\NxsHelloSpryker\Business\Model\ReadString
+     */
+    public function createReader()
+    {
+        return new ReadString(
             $this->getQueryContainer()
+        );
+    }
+
+    /**
+     * @return \Pyz\Zed\NxsHelloSpryker\Business\Model\WriteString
+     */
+    public function createWriter()
+    {
+        return new WriteString(
+            $this->getConfig(),
+            $this->createReader()
         );
     }
 }

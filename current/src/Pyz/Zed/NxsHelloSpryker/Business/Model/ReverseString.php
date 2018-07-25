@@ -7,30 +7,40 @@
 
 namespace Pyz\Zed\NxsHelloSpryker\Business\Model;
 
-use Orm\Zed\NxsHelloSpryker\Persistence\NxsHelloSpryker;
-use Pyz\Zed\NxsHelloSpryker\NxsHelloSprykerConfig;
-use Pyz\Zed\NxsHelloSpryker\Persistence\NxsHelloSprykerQueryContainerInterface;
+use Pyz\Zed\NxsStringFormat\Business\NxsStringFormatFacadeInterface;
 
 class ReverseString
 {
-    /** @var \Pyz\Zed\NxsHelloSpryker\NxsHelloSprykerConfig */
-    private $config;
+    /**
+     * @var \Pyz\Zed\NxsHelloSpryker\Business\Model\ReadStringInterface
+     */
+    private $read;
 
     /**
-     * @var \Pyz\Zed\NxsHelloSpryker\Persistence\NxsHelloSprykerQueryContainerInterface
+     * @var \Pyz\Zed\NxsHelloSpryker\Business\Model\WriteStringInterface
      */
-    private $queryContainer;
+    private $write;
+
+    /**
+     * @var \Pyz\Zed\NxsStringFormat\Business\NxsStringFormatFacadeInterface
+     */
+    private $stringFormatFacade;
 
     /**
      * ReverseString constructor.
      *
-     * @param \Pyz\Zed\NxsHelloSpryker\NxsHelloSprykerConfig $config
-     * @param \Pyz\Zed\NxsHelloSpryker\Persistence\NxsHelloSprykerQueryContainerInterface $queryContainer
+     * @param \Pyz\Zed\NxsHelloSpryker\Business\Model\ReadStringInterface $readString
+     * @param \Pyz\Zed\NxsHelloSpryker\Business\Model\WriteStringInterface $writeString
+     * @param \Pyz\Zed\NxsStringFormat\Business\NxsStringFormatFacadeInterface $facade
      */
-    public function __construct(NxsHelloSprykerConfig $config, NxsHelloSprykerQueryContainerInterface $queryContainer)
-    {
-        $this->config = $config;
-        $this->queryContainer = $queryContainer;
+    public function __construct(
+        ReadStringInterface $readString,
+        WriteStringInterface $writeString,
+        NxsStringFormatFacadeInterface $facade
+    ) {
+        $this->write = $writeString;
+        $this->read = $readString;
+        $this->stringFormatFacade = $facade;
     }
 
     /**
@@ -38,14 +48,13 @@ class ReverseString
      */
     public function getReversedString(): string
     {
-        $helloSprykerEntity = $this->queryContainer->createHelloSpryker()->filterByIdHelloSpryker(1)->findOne();
+        $string = $this->read->getString();
 
-        if (!$helloSprykerEntity) {
-            $helloSprykerEntity = new NxsHelloSpryker();
-            $helloSprykerEntity->setString($this->config->getString());
-            $helloSprykerEntity->save();
+        if (empty($string)) {
+            $helloSprykerEntity = $this->write->persist();
+            $string = $helloSprykerEntity->getString();
         }
 
-        return strrev($helloSprykerEntity->getString());
+        return $this->stringFormatFacade->getStringFormat()->getReversedString($string);
     }
 }
