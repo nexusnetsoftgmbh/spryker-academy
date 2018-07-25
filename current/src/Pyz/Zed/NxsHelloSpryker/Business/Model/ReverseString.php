@@ -1,23 +1,36 @@
 <?php
 
+/**
+ * This file is part of the Spryker Suite.
+ * For full license information, please view the LICENSE file that was distributed with this source code.
+ */
 
 namespace Pyz\Zed\NxsHelloSpryker\Business\Model;
 
-
+use Orm\Zed\NxsHelloSpryker\Persistence\NxsHelloSpryker;
 use Pyz\Zed\NxsHelloSpryker\NxsHelloSprykerConfig;
+use Pyz\Zed\NxsHelloSpryker\Persistence\NxsHelloSprykerQueryContainerInterface;
 
 class ReverseString
 {
-    /** @var NxsHelloSprykerConfig */
+    /** @var \Pyz\Zed\NxsHelloSpryker\NxsHelloSprykerConfig */
     private $config;
 
     /**
-     * ReverseString constructor.
-     * @param NxsHelloSprykerConfig $config
+     * @var \Pyz\Zed\NxsHelloSpryker\Persistence\NxsHelloSprykerQueryContainerInterface
      */
-    public function __construct(NxsHelloSprykerConfig $config)
+    private $queryContainer;
+
+    /**
+     * ReverseString constructor.
+     *
+     * @param \Pyz\Zed\NxsHelloSpryker\NxsHelloSprykerConfig $config
+     * @param \Pyz\Zed\NxsHelloSpryker\Persistence\NxsHelloSprykerQueryContainerInterface $queryContainer
+     */
+    public function __construct(NxsHelloSprykerConfig $config, NxsHelloSprykerQueryContainerInterface $queryContainer)
     {
         $this->config = $config;
+        $this->queryContainer = $queryContainer;
     }
 
     /**
@@ -25,6 +38,14 @@ class ReverseString
      */
     public function getReversedString(): string
     {
-        return strrev($this->config->getString());
+        $helloSprykerEntity = $this->queryContainer->createHelloSpryker()->filterByIdHelloSpryker(1)->findOne();
+
+        if (!$helloSprykerEntity) {
+            $helloSprykerEntity = new NxsHelloSpryker();
+            $helloSprykerEntity->setString($this->config->getString());
+            $helloSprykerEntity->save();
+        }
+
+        return strrev($helloSprykerEntity->getString());
     }
 }
