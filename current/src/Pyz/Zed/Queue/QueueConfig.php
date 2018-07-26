@@ -33,6 +33,9 @@ class QueueConfig extends SprykerQueueConfig
             Config::get(LogConstants::LOG_QUEUE_NAME) => [
                 static::RABBITMQ => $this->getRabbitMqQueueConsumerOptions(),
             ],
+            'hello' => [
+                static::RABBITMQ => $this->getRabbitMqQueueConsumerOptions()
+            ],
         ];
     }
 
