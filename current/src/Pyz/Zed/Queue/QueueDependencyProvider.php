@@ -7,6 +7,8 @@
 
 namespace Pyz\Zed\Queue;
 
+use Pyz\Shared\HelloWorldQueue\HelloWorldQueueConstants;
+use Pyz\Zed\HelloWorldQueue\Communication\Plugin\HelloWorldQueueMessageProcessorPlugin;
 use Spryker\Shared\AvailabilityStorage\AvailabilityStorageConstants;
 use Spryker\Shared\CategoryPageSearch\CategoryPageSearchConstants;
 use Spryker\Shared\CategoryStorage\CategoryStorageConstants;
@@ -49,6 +51,7 @@ class QueueDependencyProvider extends SprykerDependencyProvider
             CmsPageSearchConstants::CMS_SYNC_SEARCH_QUEUE => new SynchronizationSearchQueueMessageProcessorPlugin(),
             CategoryPageSearchConstants::CATEGORY_SYNC_SEARCH_QUEUE => new SynchronizationSearchQueueMessageProcessorPlugin(),
             ProductPageSearchConstants::PRODUCT_SYNC_SEARCH_QUEUE => new SynchronizationSearchQueueMessageProcessorPlugin(),
+            HelloWorldQueueConstants::HELLO_WOLRD_QUEUE => new HelloWorldQueueMessageProcessorPlugin(),
         ];
     }
 }

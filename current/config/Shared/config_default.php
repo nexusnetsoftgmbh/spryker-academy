@@ -428,3 +428,9 @@ $config[GlueApplicationConstants::GLUE_APPLICATION_REST_DEBUG] = false;
 $config[OauthConstants::PRIVATE_KEY_PATH] = 'file://';
 $config[OauthConstants::PUBLIC_KEY_PATH] = 'file://';
 $config[OauthConstants::ENCRYPTION_KEY] = '';
+
+$config[QueueConstants::QUEUE_ADAPTER_CONFIGURATION] = [
+    'hello' => [
+        QueueConfig::CONFIG_QUEUE_ADAPTER => \Spryker\Client\RabbitMq\Model\RabbitMqAdapter::class,
+    ],
+];
