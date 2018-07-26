@@ -428,3 +428,5 @@ $config[GlueApplicationConstants::GLUE_APPLICATION_REST_DEBUG] = false;
 $config[OauthConstants::PRIVATE_KEY_PATH] = 'file://';
 $config[OauthConstants::PUBLIC_KEY_PATH] = 'file://';
 $config[OauthConstants::ENCRYPTION_KEY] = '';
+
+$config[\Pyz\Shared\NxsHelloSpryker\NxsHelloSprykerConstants::STRING] = 'Hello Spryker!';
