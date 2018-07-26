@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <nxs>
+        <label>NXS</label>
+        <title>NXS</title>
+        <icon>fa-folder-o</icon>
+        <pages>
+            <nxs-hello-spryker>
+                <label>Hello Spryker</label>
+                <title>Hello Spryker</title>
+                <bundle>nxs-hello-spryker</bundle>
+                <controller>index</controller>
+                <action>index</action>
+            </nxs-hello-spryker>
+        </pages>
+    </nxs>
+</config>
