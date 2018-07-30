@@ -22,6 +22,22 @@ use SprykerShop\Yves\DiscountWidget\Plugin\CheckoutPage\CheckoutVoucherFormWidge
 
 class CheckoutPageDependencyProvider extends SprykerShopCheckoutPageDependencyProvider
 {
+    const PLUGIN_VOUCHER_PAGE_WIDGETS = 'PLUGIN_VOUCHER_PAGE_WIDGETS';
+
+    /**
+     * @param \Spryker\Yves\Kernel\Container $container
+     *
+     * @return \Spryker\Yves\Kernel\Container
+     */
+    public function provideDependencies(Container $container)
+    {
+        $container = parent::provideDependencies($container);
+
+        $container = $this->addVoucherStepHandlerPlugin($container);
+
+        return $container;
+    }
+
     /**
      * @return string[]
      */
@@ -100,5 +116,28 @@ class CheckoutPageDependencyProvider extends SprykerShopCheckoutPageDependencyPr
     protected function getAddressStepFormDataProvider(Container $container)
     {
         return new CheckoutAddressFormDataProvider($this->getCustomerClient($container), $this->getStore());
+    }
+
+
+    /**
+     * @param \Spryker\Yves\Kernel\Container $container
+     *
+     * @return \Spryker\Yves\Kernel\Container
+     */
+    protected function addVoucherStepHandlerPlugin(Container $container): Container
+    {
+        $container[self::PLUGIN_VOUCHER_PAGE_WIDGETS] = function () {
+            return $this->getVoucherPageWidgetPlugins();
+        };
+
+        return $container;
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getVoucherPageWidgetPlugins(): array
+    {
+        return [];
     }
 }

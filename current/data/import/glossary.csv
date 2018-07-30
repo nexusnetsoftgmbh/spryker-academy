@@ -1744,3 +1744,7 @@ customer.account.print_shopping_list.title.shopping_list_name,Shopping List Name
 customer.account.print_shopping_list.title.shopping_list_name,Name der Einkaufsliste,de_DE
 customer.order.canceledTotal,Canceled amount,en_US
 customer.order.canceledTotal,Stornierter Betrag,de_DE
+checkout.step.voucher.title,Gutschein,de_DE
+checkout.step.voucher.title,Voucher,en_US
+checkout.step.voucher,Weiter zur Gutschein-Eingabe,de_DE
+checkout.step.voucher,Go to Voucher,en_US
