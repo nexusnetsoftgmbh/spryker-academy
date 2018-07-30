@@ -18,9 +18,8 @@ class GatewayController extends AbstractGatewayController
     /**
      * @return \Generated\Shared\Transfer\NxsHelloSprykerMessageTransfer
      */
-    public function getReversedStringAction(): NxsHelloSprykerMessageTransfer
+    public function getReversedStringAction(NxsHelloSprykerMessageTransfer $transfer): NxsHelloSprykerMessageTransfer
     {
-        $transfer = new NxsHelloSprykerMessageTransfer();
         $transfer->setValue($this->getFacade()->getReversedString());
 
         return $transfer;

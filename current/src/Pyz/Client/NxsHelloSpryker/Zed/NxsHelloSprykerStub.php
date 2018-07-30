@@ -9,7 +9,6 @@ namespace Pyz\Client\NxsHelloSpryker\Zed;
 
 use Generated\Shared\Transfer\NxsHelloSprykerMessageTransfer;
 use Spryker\Client\ZedRequest\ZedRequestClientInterface;
-use Spryker\Shared\Kernel\Transfer\TransferInterface;
 
 class NxsHelloSprykerStub
 {
@@ -27,9 +26,9 @@ class NxsHelloSprykerStub
     }
 
     /**
-     * @return \Spryker\Shared\Kernel\Transfer\TransferInterface
+     * @return \Generated\Shared\Transfer\NxsHelloSprykerMessageTransfer
      */
-    public function getReversedString(): TransferInterface
+    public function getReversedString(): NxsHelloSprykerMessageTransfer
     {
         return $this->zedRequestClient->call(
             '/nxs-hello-spryker/gateway/get-reversed-string',

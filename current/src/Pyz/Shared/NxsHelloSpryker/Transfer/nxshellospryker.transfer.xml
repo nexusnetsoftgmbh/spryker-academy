@@ -7,10 +7,4 @@
         <property name="value" type="string" />
     </transfer>
 
-    <transfer name="NxsHelloSprykerMessageResponse">
-        <property name="nxsHelloSprykerMessage" type="NxsHelloSprykerMessage"/>
-        <property name="isSuccessful" type="bool"/>
-        <property name="messages" type="ResponseMessage[]" singular="message"/>
-    </transfer>
-
 </transfers>

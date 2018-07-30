@@ -7,8 +7,8 @@
 
 namespace Pyz\Client\NxsHelloSpryker;
 
+use Generated\Shared\Transfer\NxsHelloSprykerMessageTransfer;
 use Spryker\Client\Kernel\AbstractClient;
-use Spryker\Shared\Kernel\Transfer\TransferInterface;
 
 /**
  * @method \Pyz\Client\NxsHelloSpryker\NxsHelloSprykerFactory getFactory()
@@ -16,9 +16,9 @@ use Spryker\Shared\Kernel\Transfer\TransferInterface;
 class NxsHelloSprykerClient extends AbstractClient
 {
     /**
-     * @return \Spryker\Shared\Kernel\Transfer\TransferInterface
+     * @return \Generated\Shared\Transfer\NxsHelloSprykerMessageTransfer
      */
-    public function getReversedString(): TransferInterface
+    public function getReversedString(): NxsHelloSprykerMessageTransfer
     {
         return $this->getFactory()->createZedStub()->getReversedString();
     }
