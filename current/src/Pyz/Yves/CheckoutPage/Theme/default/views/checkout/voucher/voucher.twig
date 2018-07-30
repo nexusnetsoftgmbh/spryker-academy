@@ -1,0 +1,44 @@
+{% extends template('page-layout-checkout', 'CheckoutPage') %}
+
+{% define data = {
+    backUrl: _view.previousStepUrl,
+    forms: {
+        voucher: _view.voucherForm
+    },
+
+    title: 'checkout.step.voucher.title' | trans
+} %}
+
+{#{% block content %}#}
+    {#{{ data.forms.voucher.children.voucherDiscounts }}#}
+    {#{{ form_widget(data.forms.voucher.children.voucherDiscounts) }}#}
+    {#{{ form_widget(data.forms.voucher.children.voucherButton) }}#}
+    {#{{ form(data.forms.voucher) }}#}
+{#{% endblock %}#}
+
+{% block content %}
+    {% embed molecule('form') with {
+        class: 'box',
+        data: {
+            form: data.forms.voucher,
+            options: {
+                attr: {
+                    id: 'voucher-form'
+                }
+            },
+            submit: {
+                enable: true,
+                text: 'checkout.step.payment' | trans
+            },
+            cancel: {
+                enable: true,
+                url: data.backUrl,
+                text: 'general.back.button' | trans
+            }
+        }
+    } only %}
+        {% block fields %}
+
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
