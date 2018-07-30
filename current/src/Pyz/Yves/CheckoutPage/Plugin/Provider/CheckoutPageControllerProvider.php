@@ -13,7 +13,6 @@ use SprykerShop\Yves\CheckoutPage\Plugin\Provider\CheckoutPageControllerProvider
 class CheckoutPageControllerProvider extends SprykerCheckoutPageControllerProvider
 {
     const CHECKOUT_VOUCHER = 'checkout-voucher';
-    const CHECKOUT_VOUCHER_ADD = 'checkout-voucher-add';
 
     /**
      * @param \Silex\Application $app
@@ -24,8 +23,6 @@ class CheckoutPageControllerProvider extends SprykerCheckoutPageControllerProvid
     {
         parent::defineControllers($app);
         $this->addVoucherStepRoute();
-        $this->addVoucherRoute();
-        $this->addAndValidateCheckoutVoucherRoute();
     }
 
     /**
@@ -41,29 +38,4 @@ class CheckoutPageControllerProvider extends SprykerCheckoutPageControllerProvid
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    protected function addAndValidateCheckoutVoucherRoute(): self
-    {
-        $this->createController('/{checkout}/addvoucher', self::CHECKOUT_VOUCHER_ADD, 'CheckoutPage', 'Checkout', 'addAndValidateVoucher')
-             ->assert('checkout', $this->getAllowedLocalesPattern() . 'checkout|checkout')
-             ->value('checkout', 'checkout')
-             ->method('GET|POST');
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    protected function addVoucherRoute(): self
-    {
-        $this->createController('/{checkout}/add-voucher', self::CHECKOUT_VOUCHER_ADD, 'CheckoutPage', 'Checkout', 'addVoucher')
-             ->assert('checkout', $this->getAllowedLocalesPattern() . 'checkout|checkout')
-             ->value('checkout', 'checkout')
-             ->method('GET|POST');
-
-        return $this;
-    }
 }

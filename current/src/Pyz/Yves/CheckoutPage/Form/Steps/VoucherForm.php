@@ -7,8 +7,8 @@
 
 namespace Pyz\Yves\CheckoutPage\Form\Steps;
 
+use Generated\Shared\Transfer\QuoteTransfer;
 use Spryker\Yves\Kernel\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -17,17 +17,16 @@ use Symfony\Component\Form\FormBuilderInterface;
  */
 class VoucherForm extends AbstractType
 {
-    const FORM_NAME                = 'voucherForm';
-    const FIELD_VOUCHER_DISCOUNTS  = 'voucherDiscounts';
-    const FIELD_VOUCHER_ADD_BUTTON = 'voucherButton';
+    const FIELD_ID_VOUCHER_METHOD = 'voucherCode';
 
     /**
      * @return string
      */
     public function getBlockPrefix()
     {
-        return static::FORM_NAME;
+        return 'voucherForm';
     }
+
 
     /**
      * @param \Symfony\Component\Form\FormBuilderInterface $builder
@@ -37,35 +36,21 @@ class VoucherForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->setAction('/checkout/add-voucher');
-
-        $this->addVoucherCodeField($builder);
-//        $this->addVoucherAddAction($builder);
+        $this->addVoucherMethods($builder, $options);
     }
 
     /**
      * @param \Symfony\Component\Form\FormBuilderInterface $builder
+     * @param array $options
      *
      * @return $this
      */
-    protected function addVoucherCodeField(FormBuilderInterface $builder)
+    protected function addVoucherMethods(FormBuilderInterface $builder, array $options)
     {
-        $builder->add(static::FIELD_VOUCHER_DISCOUNTS, TextType::class, [
-            'label'    => 'page.checkout.finalize.enter-voucher',
-            'required' => false,
+        $builder->add(self::FIELD_ID_VOUCHER_METHOD, TextType::class, [
+            'attr' => array('class' => 'voucher')
         ]);
 
         return $this;
     }
-
-    protected function addVoucherAddAction(FormBuilderInterface $builder)
-    {
-        $builder->add(static::FIELD_VOUCHER_ADD_BUTTON, ButtonType::class, [
-            'attr' => array('class' => 'save'),
-        ]);
-
-        return $this;
-    }
-
-
 }
