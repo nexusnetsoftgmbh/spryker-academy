@@ -1,3 +1,8 @@
 /.idea
-!.gitkeep
 
+/composer.lock
+/cli/Generated/*
+/vendor
+
+# Ignore
+!.gitkeep

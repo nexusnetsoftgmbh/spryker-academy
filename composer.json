@@ -1,0 +1,19 @@
+{
+  "name": "nexusnetsoftgmbh/spryker-academy",
+  "description": "Spryker Academy",
+  "license": "MIT",
+  "require": {
+    "nexusnetsoftgmbh/nxscli-spryker": "^1.2.0"
+  },
+  "require-dev": {
+    "xervice/development": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "DataProvider\\": "cli/Generated/"
+    },
+    "psr-0": {
+      "Nexus\\": "cli/"
+    }
+  }
+}
