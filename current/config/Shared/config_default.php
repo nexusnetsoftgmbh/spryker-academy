@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use Pyz\Shared\Mail\MailConstants;
 use Spryker\Client\RabbitMq\Model\RabbitMqAdapter;
 use Spryker\Glue\Log\Plugin\GlueLoggerConfigPlugin;
 use Spryker\Service\FlysystemLocalFileSystem\Plugin\Flysystem\LocalFilesystemBuilderPlugin;
@@ -482,3 +483,9 @@ $config[QueueConstants::QUEUE_ADAPTER_CONFIGURATION_DEFAULT] = [
 ];
 
 $config[QueueConstants::QUEUE_ADAPTER_CONFIGURATION][EventConstants::EVENT_QUEUE][QueueConfig::CONFIG_MAX_WORKER_NUMBER] = 5;
+
+// ----------- RabbitMq
+$config[MailConstants::SMTP_HOST] = getenv('SMTP_SERVER');
+$config[MailConstants::SMTP_PORT] = 25;
+$config[MailConstants::SMTP_USERNAME] = '';
+$config[MailConstants::SMTP_PASSWORD] = '';

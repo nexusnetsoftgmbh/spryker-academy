@@ -20,13 +20,20 @@ use Spryker\Zed\Kernel\Container;
 use Spryker\Zed\Mail\Business\Model\Mail\MailTypeCollectionAddInterface;
 use Spryker\Zed\Mail\Business\Model\Provider\MailProviderCollectionAddInterface;
 use Spryker\Zed\Mail\Communication\Plugin\MailProviderPlugin;
+use Spryker\Zed\Mail\Dependency\Mailer\MailToMailerBridge;
 use Spryker\Zed\Mail\MailConfig;
 use Spryker\Zed\Mail\MailDependencyProvider as SprykerMailDependencyProvider;
 use Spryker\Zed\Newsletter\Communication\Plugin\Mail\NewsletterSubscribedMailTypePlugin;
 use Spryker\Zed\Newsletter\Communication\Plugin\Mail\NewsletterUnsubscribedMailTypePlugin;
 use Spryker\Zed\Oms\Communication\Plugin\Mail\OrderConfirmationMailTypePlugin;
 use Spryker\Zed\Oms\Communication\Plugin\Mail\OrderShippedMailTypePlugin;
+use Swift_Mailer;
+use Swift_Message;
+use Swift_SmtpTransport;
 
+/**
+ * @method \Pyz\Zed\Mail\MailConfig getConfig()
+ */
 class MailDependencyProvider extends SprykerMailDependencyProvider
 {
     /**
@@ -68,4 +75,33 @@ class MailDependencyProvider extends SprykerMailDependencyProvider
 
         return $container;
     }
+
+    /**
+     * @param \Spryker\Zed\Kernel\Container $container
+     *
+     * @return \Spryker\Zed\Kernel\Container
+     */
+    protected function addMailer(Container $container)
+    {
+        $container[static::MAILER] = function () {
+            $message = new Swift_Message();
+            $transport = new Swift_SmtpTransport(
+                $this->getConfig()->getSmtpHost(),
+                $this->getConfig()->getSmtpPort()
+            );
+
+            $transport->setUsername($this->getConfig()->getSmtpUsername());
+            $transport->setPassword($this->getConfig()->getSmtpPassword());
+
+            $mailer = new Swift_Mailer($transport);
+
+            $mailerBridge = new MailToMailerBridge($message, $mailer);
+
+            return $mailerBridge;
+        };
+
+        return $container;
+    }
+
+
 }
