@@ -486,6 +486,6 @@ $config[QueueConstants::QUEUE_ADAPTER_CONFIGURATION][EventConstants::EVENT_QUEUE
 
 // ----------- RabbitMq
 $config[MailConstants::SMTP_HOST] = getenv('SMTP_SERVER');
-$config[MailConstants::SMTP_PORT] = 25;
+$config[MailConstants::SMTP_PORT] = 1025;
 $config[MailConstants::SMTP_USERNAME] = '';
 $config[MailConstants::SMTP_PASSWORD] = '';
