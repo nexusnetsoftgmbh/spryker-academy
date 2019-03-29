@@ -31,7 +31,9 @@ class DeployProjectCommand extends AbstractNexusCliCommand
         $response .= $this->runNexusCli('spryker:rabbitmq:addstore DE development mate20mg spy_rabbitmq -vvv');
         $response .= $this->runNexusCli('spryker:rabbitmq:addstore DE devtest mate20mg spy_rabbitmq -vvv');
         $response .= $this->runNexusCli('spryker:rabbitmq:addstore AT development mate20mg spy_rabbitmq -vvv');
+        $response .= $this->runNexusCli('spryker:rabbitmq:addstore AT devtest mate20mg spy_rabbitmq -vvv');
         $response .= $this->runNexusCli('spryker:rabbitmq:addstore US development mate20mg spy_rabbitmq -vvv');
+        $response .= $this->runNexusCli('spryker:rabbitmq:addstore US devtest mate20mg spy_rabbitmq -vvv');
         $response .= $this->runNexusCli('spryker:deploy spy_php -vvv');
         $response .= $this->runNexusCli('docker:exec spy_php "bash -c \'chown -Rf www-data:www-data /data\'" -vvv');
         $response .= $this->runNexusCli('docker:exec spy_php "bash -c \'chmod -Rf 0777 /data/shop/development/current/data\'" -vvv');
