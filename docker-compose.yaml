@@ -13,7 +13,6 @@ services:
     container_name: spy_php
     image: nexusnetsoft/spryker-php-fpm:7.2
     environment:
-      APPLICATION_ENV: development
       PGPASSWORD: mate20mg
       JENKINS_SERVER: spy_jenkins
       ES_SERVER: spy_elasticsearch
