@@ -31,8 +31,8 @@ class XdebugDeactivateProjectCommand extends AbstractNexusCliCommand
     {
         $response = '';
 
-        $response .= $this->runNexusCli('docker:exec php "mv /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.inactive"');
-        $response .= $this->runNexusCli('docker:restart php');
+        $response .= $this->runNexusCli('docker:exec spy_php "mv /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.inactive"');
+        $response .= $this->runNexusCli('docker:restart spy_php');
 
         if ($output->isVerbose()) {
             $output->writeln($response);
