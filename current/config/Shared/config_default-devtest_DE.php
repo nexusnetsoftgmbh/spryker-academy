@@ -114,7 +114,7 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
 ];
 
 // ---------- Event
-$config[EventConstants::EVENT_CHUNK] = 5000;
+$config[EventConstants::EVENT_CHUNK] = 100;
 
 // ---------- Session
 $config[SessionConstants::YVES_SESSION_COOKIE_DOMAIN] = $config[ApplicationConstants::HOST_YVES];

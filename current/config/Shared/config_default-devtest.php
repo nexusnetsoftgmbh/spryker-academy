@@ -111,4 +111,4 @@ $config[OauthCustomerConnectorConstants::OAUTH_CLIENT_SECRET] = 'abc123';
 $config[QueueConstants::QUEUE_WORKER_LOOP] = true;
 
 // ---------- Event
-$config[EventConstants::EVENT_CHUNK] = 5000;
+$config[EventConstants::EVENT_CHUNK] = 100;
