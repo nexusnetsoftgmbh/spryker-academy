@@ -28,12 +28,13 @@ class InstallProjectCommand extends AbstractNexusCliCommand
     {
         $response = '';
 
-        $response .= $this->runNexusCli('spryker:rabbitmq:addstore DE -vvv');
-        $response .= $this->runNexusCli('spryker:rabbitmq:addstore AT -vvv');
-        $response .= $this->runNexusCli('spryker:rabbitmq:addstore US -vvv');
-        $response .= $this->runNexusCli('spryker:install -vvv');
-        $response .= $this->runNexusCli('docker:exec php "bash -c \'chown -Rf www-data:www-data /data\'" -vvv');
-        $response .= $this->runNexusCli('docker:exec php "bash -c \'chmod -Rf 0777 /data/shop/development/current/data\'" -vvv');
+        $response .= $this->runNexusCli('spryker:rabbitmq:addstore DE development mate20mg spy_rabbitmq -vvv');
+        $response .= $this->runNexusCli('spryker:rabbitmq:addstore DE devtest mate20mg spy_rabbitmq -vvv');
+        $response .= $this->runNexusCli('spryker:rabbitmq:addstore AT development mate20mg spy_rabbitmq -vvv');
+        $response .= $this->runNexusCli('spryker:rabbitmq:addstore US development mate20mg spy_rabbitmq -vvv');
+        $response .= $this->runNexusCli('spryker:install "" "spy_php" -vvv');
+        $response .= $this->runNexusCli('docker:exec spy_php "chown -Rf www-data:www-data /data" -vvv');
+        $response .= $this->runNexusCli('docker:exec spy_php "chmod -Rf 0777 /data/shop/development/current/data" -vvv');
 
         if ($output->isVerbose()) {
             $output->writeln($response);

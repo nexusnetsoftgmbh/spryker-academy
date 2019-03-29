@@ -1,8 +1,20 @@
+# IDE
 /.idea
 
-/composer.lock
+# NXS CLI
 /cli/Generated/*
+/dump
+
+# Composer
 /vendor
 
-# Ignore
+# Ignoring
 !.gitkeep
+
+unison.sh
+dump/
+
+# Spryker
+/current/src/Orm/Propel/DE/Migration_pgsql/*
+/current/src/Orm/Propel/AT/Migration_pgsql/*
+/current/src/Orm/Propel/US/Migration_pgsql/*

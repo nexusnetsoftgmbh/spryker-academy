@@ -1,4 +1,4 @@
-FROM nexusnetsoft/spryker-php-fpm:7.1
+FROM nexusnetsoft/spryker-php-fpm:7.2
 MAINTAINER Mike Bertram <bertram@nexus-netsoft.com>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -7,11 +7,11 @@ RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | \
     tee /etc/apt/sources.list.d/webupd8team-java.list \
  && echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | \
     tee -a /etc/apt/sources.list.d/webupd8team-java.list \
- && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 \
+ && apt-key adv --no-tty --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 \
  && apt-get update \
  && echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
  && echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
- && apt-get install -y oracle-java8-installer \
+ && apt-get install -y oracle-java8-installer procps \
  && rm -rf /var/lib/apt/lists/*
 
 RUN ln -s /usr/local/bin/php /usr/bin/php
@@ -47,8 +47,8 @@ ARG TINI_VERSION=v0.16.1
 COPY tini_pub.gpg /var/jenkins_home/tini_pub.gpg
 RUN curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-$(dpkg --print-architecture) -o /sbin/tini \
   && curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-$(dpkg --print-architecture).asc -o /sbin/tini.asc \
-  && gpg --import /var/jenkins_home/tini_pub.gpg \
-  && gpg --verify /sbin/tini.asc \
+  && gpg --no-tty --import /var/jenkins_home/tini_pub.gpg \
+  && gpg --no-tty --verify /sbin/tini.asc \
   && rm -rf /sbin/tini.asc /root/.gnupg \
   && chmod +x /sbin/tini
 
@@ -56,10 +56,10 @@ COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groov
 
 # jenkins version being bundled in this docker image
 ARG JENKINS_VERSION
-ENV JENKINS_VERSION ${JENKINS_VERSION:-2.60.3}
+ENV JENKINS_VERSION ${JENKINS_VERSION:-2.99}
 
 # jenkins.war checksum, download will be validated using it
-ARG JENKINS_SHA=2d71b8f87c8417f9303a73d52901a59678ee6c0eefcf7325efed6035ff39372a
+ARG JENKINS_SHA=7c783d758b150f6b4ab14aaf1a745b888fff10eea46f1b1cfc0e2730f3dde918
 
 # Can be used to customize where jenkins.war get downloaded from
 ARG JENKINS_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/${JENKINS_VERSION}/jenkins-war-${JENKINS_VERSION}.war
@@ -81,10 +81,16 @@ EXPOSE ${agent_port}
 
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
 
-USER ${user}
-
 COPY jenkins-support /usr/local/bin/jenkins-support
 COPY jenkins.sh /usr/local/bin/jenkins.sh
+
+RUN chown ${user}:${group} /usr/local/bin/jenkins.sh \
+ && chown ${user}:${group} /usr/local/bin/jenkins-support \
+ && chmod +x /usr/local/bin/jenkins.sh \
+ && chmod +x /usr/local/bin/jenkins-support
+
+USER ${user}
+
 ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/jenkins.sh"]
 
 # from a derived Dockerfile, can use `RUN plugins.sh active.txt` to setup /usr/share/jenkins/ref/plugins from a support bundle

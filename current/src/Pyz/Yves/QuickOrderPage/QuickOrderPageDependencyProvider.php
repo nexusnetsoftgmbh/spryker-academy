@@ -7,18 +7,73 @@
 
 namespace Pyz\Yves\QuickOrderPage;
 
-use SprykerShop\Yves\MultiCartWidget\Plugin\QuickOrderPage\MultiCartListWidgetPlugin;
+use SprykerShop\Yves\ProductPackagingUnitWidget\Plugin\QuickOrder\QuickOrderItemDefaultPackagingUnitExpanderPlugin;
+use SprykerShop\Yves\QuickOrderPage\Plugin\QuickOrder\QuickOrderFormMeasurementUnitColumnPlugin;
+use SprykerShop\Yves\QuickOrderPage\Plugin\QuickOrderPage\QuickOrderCsvFileTemplateStrategyPlugin;
+use SprykerShop\Yves\QuickOrderPage\Plugin\QuickOrderPage\QuickOrderCsvUploadedFileParserStrategyPlugin;
+use SprykerShop\Yves\QuickOrderPage\Plugin\QuickOrderPage\QuickOrderCsvUploadedFileValidatorStrategyPlugin;
 use SprykerShop\Yves\QuickOrderPage\QuickOrderPageDependencyProvider as SprykerQuickOrderPageDependencyProvider;
+use SprykerShop\Yves\ShoppingListWidget\Plugin\QuickOrderPage\ShoppingListQuickOrderFormHandlerStrategyPlugin;
 
 class QuickOrderPageDependencyProvider extends SprykerQuickOrderPageDependencyProvider
 {
     /**
-     * @return string[]
+     * @return \SprykerShop\Yves\QuickOrderPageExtension\Dependency\Plugin\QuickOrderItemExpanderPluginInterface[]
      */
-    protected function getQuickOrderPageWidgetPlugins(): array
+    protected function getQuickOrderItemTransferExpanderPlugins(): array
     {
         return [
-            MultiCartListWidgetPlugin::class, #MultiCartFeature
+            new QuickOrderItemDefaultPackagingUnitExpanderPlugin(),
+        ];
+    }
+
+    /**
+     * @return \SprykerShop\Yves\QuickOrderPageExtension\Dependency\Plugin\QuickOrderFormHandlerStrategyPluginInterface[]
+     */
+    protected function getQuickOrderFormHandlerStrategyPlugins(): array
+    {
+        return [
+            new ShoppingListQuickOrderFormHandlerStrategyPlugin(), #ShoppingListFeature
+        ];
+    }
+
+    /**
+     * @return \SprykerShop\Yves\QuickOrderPageExtension\Dependency\Plugin\QuickOrderFormColumnPluginInterface[]
+     */
+    protected function getQuickOrderFormColumnPlugins(): array
+    {
+        return [
+            new QuickOrderFormMeasurementUnitColumnPlugin(),
+        ];
+    }
+
+    /**
+     * @return \SprykerShop\Yves\QuickOrderPageExtension\Dependency\Plugin\QuickOrderUploadedFileParserStrategyPluginInterface[]
+     */
+    protected function getQuickOrderUploadedFileParserPlugins(): array
+    {
+        return [
+            new QuickOrderCsvUploadedFileParserStrategyPlugin(),
+        ];
+    }
+
+    /**
+     * @return \SprykerShop\Yves\QuickOrderPageExtension\Dependency\Plugin\QuickOrderFileTemplateStrategyPluginInterface[]
+     */
+    protected function getQuickOrderFileTemplatePlugins(): array
+    {
+        return [
+            new QuickOrderCsvFileTemplateStrategyPlugin(),
+        ];
+    }
+
+    /**
+     * @return \SprykerShop\Yves\QuickOrderPageExtension\Dependency\Plugin\QuickOrderUploadedFileValidatorStrategyPluginInterface[]
+     */
+    protected function getQuickOrderUploadedFileValidatorPlugins(): array
+    {
+        return [
+            new QuickOrderCsvUploadedFileValidatorStrategyPlugin(),
         ];
     }
 }

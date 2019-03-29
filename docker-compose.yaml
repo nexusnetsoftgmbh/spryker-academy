@@ -1,130 +1,207 @@
 version: '3.2'
 services:
-  data:
+  spy_data:
     build: ./env/ssh
-    container_name: data
+    container_name: spy_data
     image: spryker_data
     volumes:
-      - projectdata:/data
-    restart: always
+      - spy_projectdata:/data/shop/development
     environment:
       APPLICATION_ENV: development
-      APPLICATION_STORE: DE
-  php:
+  spy_php:
     build: ./env/php
-    container_name: php
-    image: nexusnetsoft/spryker-php-fpm:7.1
+    container_name: spy_php
+    image: nexusnetsoft/spryker-php-fpm:7.2
     environment:
       APPLICATION_ENV: development
-      APPLICATION_STORE: DE
       PGPASSWORD: mate20mg
-    links:
-      - zed:zed_de
-      - zed:zed_us
+      JENKINS_SERVER: spy_jenkins
+      ES_SERVER: spy_elasticsearch
+      REDIS_SESSION_SERVER: spy_redis
+      REDIS_DATA_SERVER: spy_redis
+      RABBITMQ_SERVER: spy_rabbitmq
+      POSTGRESQL_SERVER: spy_db
+      RABBITMQ_ADMIN_USER: admin
+      RABBITMQ_ADMIN_PW: mate20mg
+      POSTGRESQL_USER: spryker
+      POSTGRESQL_PW: mate20mg
+      SMTP_SERVER: spy_mailcatcher
+      RABBITMQ_VHOST_DE: /DE_development_zed
+      RABBITMQ_VHOST_DE_USER: DE_development
+      RABBITMQ_VHOST_DE_PASS: mate20mg
+      RABBITMQ_VHOST_DETEST: /DE_devtest_zed
+      RABBITMQ_VHOST_DETEST_USER: DE_devtest
+      RABBITMQ_VHOST_DETEST_PASS: mate20mg
+      ZED_DE_DOMAIN: zed.de.suite.local
+      YVES_DE_DOMAIN: www.de.suite.local
+      GLUE_DE_DOMAIN: api.de.suite.local
+      RABBITMQ_VHOST_AT: /AT_development_zed
+      RABBITMQ_VHOST_AT_USER: AT_development
+      RABBITMQ_VHOST_AT_PASS: mate20mg
+      RABBITMQ_VHOST_ATTEST: /AT_devtest_zed
+      RABBITMQ_VHOST_ATTEST_USER: AT_devtest
+      RABBITMQ_VHOST_ATTEST_PASS: mate20mg
+      ZED_AT_DOMAIN: zed.at.suite.local
+      YVES_AT_DOMAIN: www.at.suite.local
+      GLUE_AT_DOMAIN: api.at.suite.local
+      RABBITMQ_VHOST_US: /US_development_zed
+      RABBITMQ_VHOST_US_USER: US_development
+      RABBITMQ_VHOST_US_PASS: mate20mg
+      RABBITMQ_VHOST_USTEST: /US_devtest_zed
+      RABBITMQ_VHOST_USTEST_USER: US_devtest
+      RABBITMQ_VHOST_USTEST_PASS: mate20mg
+      ZED_US_DOMAIN: zed.us.suite.local
+      YVES_US_DOMAIN: www.us.suite.local
+      GLUE_US_DOMAIN: api.us.suite.local
     volumes:
-      - projectdata:/data
-    restart: always
+      - spy_projectdata:/data/shop/development
     depends_on:
-      - data
-  db:
-    image: postgres:9.4.16
-    container_name: db
-    restart: always
+      - spy_data
+  spy_db:
+    image: postgres:9.6.10
+    container_name: spy_db
     env_file:
       - ./env/db.env
     volumes:
-      - dbdata:/var/lib/postgresql/data
-  redis:
+      - spy_dbdata:/var/lib/postgresql/data
+  spy_redis:
     image: redis:3.2.11
-    container_name: redis
-    restart: always
+    container_name: spy_redis
     command: redis-server --appendonly yes
     volumes:
-      - redisdata:/data
-  elasticsearch:
+      - spy_redisdata:/data
+  spy_elasticsearch:
     image: elasticsearch:5.6.8
-    container_name: elasticsearch
-    restart: always
+    container_name: spy_elasticsearch
     volumes:
       - ./env/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - elasticdata:/usr/share/elasticsearch/data
-  rabbitmq:
+      - spy_elasticdata:/usr/share/elasticsearch/data
+  spy_rabbitmq:
     image: rabbitmq:3.7.3-management
-    restart: always
-    container_name: rabbitmq
+    container_name: spy_rabbitmq
     env_file:
       - ./env/rabbitmq.env
-  jenkins:
+  spy_jenkins:
     build: ./env/jenkins
-    image: nexusnetsoft/jenkins-php:7.1
-    container_name: jenkins
-    restart: always
+    image: nexusnetsoft/jenkins-php:7.2
+    container_name: spy_jenkins
     env_file:
       - ./env/jenkins.env
     environment:
       APPLICATION_ENV: development
-      APPLICATION_STORE: DE
+      PGPASSWORD: mate20mg
+      JENKINS_SERVER: spy_jenkins
+      ES_SERVER: spy_elasticsearch
+      REDIS_SESSION_SERVER: spy_redis
+      REDIS_DATA_SERVER: spy_redis
+      RABBITMQ_SERVER: spy_rabbitmq
+      POSTGRESQL_SERVER: spy_db
+      RABBITMQ_ADMIN_USER: admin
+      RABBITMQ_ADMIN_PW: mate20mg
+      POSTGRESQL_USER: spryker
+      POSTGRESQL_PW: mate20mg
+      SMTP_SERVER: spy_mailcatcher
+      RABBITMQ_VHOST_DE: /DE_development_zed
+      RABBITMQ_VHOST_DE_USER: DE_development
+      RABBITMQ_VHOST_DE_PASS: mate20mg
+      RABBITMQ_VHOST_DETEST: /DE_devtest_zed
+      RABBITMQ_VHOST_DETEST_USER: DE_devtest
+      RABBITMQ_VHOST_DETEST_PASS: mate20mg
+      ZED_DE_DOMAIN: zed.de.suite.local
+      YVES_DE_DOMAIN: www.de.suite.local
+      GLUE_DE_DOMAIN: api.de.suite.local
+      RABBITMQ_VHOST_AT: /AT_development_zed
+      RABBITMQ_VHOST_AT_USER: AT_development
+      RABBITMQ_VHOST_AT_PASS: mate20mg
+      RABBITMQ_VHOST_ATTEST: /AT_devtest_zed
+      RABBITMQ_VHOST_ATTEST_USER: AT_devtest
+      RABBITMQ_VHOST_ATTEST_PASS: mate20mg
+      ZED_AT_DOMAIN: zed.at.suite.local
+      YVES_AT_DOMAIN: www.at.suite.local
+      GLUE_AT_DOMAIN: api.at.suite.local
+      RABBITMQ_VHOST_US: /US_development_zed
+      RABBITMQ_VHOST_US_USER: US_development
+      RABBITMQ_VHOST_US_PASS: mate20mg
+      RABBITMQ_VHOST_USTEST: /US_devtest_zed
+      RABBITMQ_VHOST_USTEST_USER: US_devtest
+      RABBITMQ_VHOST_USTEST_PASS: mate20mg
+      ZED_US_DOMAIN: zed.us.suite.local
+      YVES_US_DOMAIN: www.us.suite.local
+      GLUE_US_DOMAIN: api.us.suite.local
     links:
-      - zed:zed_de
-      - zed:zed_us
+      - spy_zed
     depends_on:
-      - data
+      - spy_data
+      - spy_php
     volumes:
-      - projectdata:/data
-  loadbalancer:
+      - spy_projectdata:/data/shop/development
+  spy_loadbalancer:
     image: nginx
-    container_name: loadbalancer
+    container_name: spy_loadbalancer
+    depends_on:
+      - spy_zed
+      - spy_api
+      - spy_swagger
     volumes:
+      - ./env/nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./env/nginx/loadbalancer.conf:/etc/nginx/conf.d/loadbalancer.conf
-    restart: always
-  yves:
-    image: nginx
-    container_name: yves
-    volumes:
-     - ./env/nginx/yves_de_spryker.conf:/etc/nginx/conf.d/yves_de_spryker.conf
-     - ./env/nginx/yves_de_spryker.conf:/etc/nginx/conf.d/yves_at_spryker.conf
-     - ./env/nginx/yves_de_spryker.conf:/etc/nginx/conf.d/yves_us_spryker.conf
-     - projectdata:/data
-    depends_on:
-      - data
-      - redis
-      - db
-      - elasticsearch
-      - rabbitmq
-    restart: always
     networks:
       default:
         aliases:
           - "www.de.suite.local"
-          - "www.at.suite.local"
-          - "www.us.suite.local"
-  zed:
-    image: nginx
-    container_name: zed
-    volumes:
-     - ./env/nginx/zed_de_spryker.conf:/etc/nginx/conf.d/zed_de_spryker.conf
-     - ./env/nginx/zed_de_spryker.conf:/etc/nginx/conf.d/zed_at_spryker.conf
-     - ./env/nginx/zed_de_spryker.conf:/etc/nginx/conf.d/zed_us_spryker.conf
-     - projectdata:/data
-    depends_on:
-      - data
-      - redis
-      - db
-      - elasticsearch
-      - rabbitmq
-    restart: always
-    networks:
-      default:
-        aliases:
+          - "api.de.suite.local"
           - "zed.de.suite.local"
+          - "www.at.suite.local"
+          - "api.at.suite.local"
           - "zed.at.suite.local"
+          - "www.us.suite.local"
+          - "api.us.suite.local"
           - "zed.us.suite.local"
+  spy_yves:
+    image: nginx
+    container_name: spy_yves
+    volumes:
+      - ./env/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./env/nginx/de_yves_spryker.conf:/etc/nginx/conf.d/de_yves_spryker.conf
+      - ./env/nginx/at_yves_spryker.conf:/etc/nginx/conf.d/at_yves_spryker.conf
+      - ./env/nginx/us_yves_spryker.conf:/etc/nginx/conf.d/us_yves_spryker.conf
+      - spy_projectdata:/data/shop/development
+    depends_on:
+      - spy_php
+  spy_api:
+    image: nginx
+    container_name: spy_api
+    volumes:
+      - ./env/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./env/nginx/de_api_spryker.conf:/etc/nginx/conf.d/de_api_spryker.conf
+      - ./env/nginx/at_api_spryker.conf:/etc/nginx/conf.d/at_api_spryker.conf
+      - ./env/nginx/us_api_spryker.conf:/etc/nginx/conf.d/us_api_spryker.conf
+      - spy_projectdata:/data/shop/development
+    depends_on:
+      - spy_php
+  spy_zed:
+    image: nginx
+    container_name: spy_zed
+    volumes:
+      - ./env/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./env/nginx/de_zed_spryker.conf:/etc/nginx/conf.d/de_zed_spryker.conf
+      - ./env/nginx/at_zed_spryker.conf:/etc/nginx/conf.d/at_zed_spryker.conf
+      - ./env/nginx/us_zed_spryker.conf:/etc/nginx/conf.d/us_zed_spryker.conf
+      - spy_projectdata:/data/shop/development
+    depends_on:
+      - spy_php
+  spy_swagger:
+    image: swaggerapi/swagger-ui
+    container_name: spy_swagger
+    environment:
+      API_URL: http://api.swagger.suite.local
+
 volumes:
-  projectdata:
+  spy_projectdata:
     external: true
-  elasticdata:
+  spy_elasticdata:
     external: true
-  redisdata:
+  spy_redisdata:
     external: true
-  dbdata:
+  spy_dbdata:
     external: true

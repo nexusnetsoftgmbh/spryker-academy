@@ -1,9 +1,9 @@
 {
-  "name": "nexusnetsoftgmbh/spryker-academy",
+  "name": "nexusnetsoft/academy",
   "description": "Spryker Academy",
   "license": "MIT",
   "require": {
-    "nexusnetsoftgmbh/nxscli-spryker": "^1.2.0"
+    "nexusnetsoftgmbh/nxscli-spryker": "^2.1.0"
   },
   "require-dev": {
     "xervice/development": "*"
@@ -15,5 +15,10 @@
     "psr-0": {
       "Nexus\\": "cli/"
     }
+  },
+  "scripts": {
+    "phpstan": [
+      "php -d memory_limit=1024M current/vendor/bin/phpstan analyze -c current/phpstan.neon current/src/ -l 4"
+    ]
   }
 }

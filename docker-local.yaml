@@ -1,36 +1,36 @@
 version: '3.2'
 services:
-  data:
+  spy_data:
     ports:
       - "2222:22"
-  db:
+  spy_db:
     ports:
       - 5432:5432
-  redis:
+  spy_redis:
     ports:
       - 6379:6379
-  elasticsearch:
+  spy_elasticsearch:
     ports:
       - 9200:9200
-  rabbitmq:
+  spy_rabbitmq:
     ports:
       - 15672:15672
-  jenkins:
+  spy_jenkins:
     ports:
       - 8080:8080
-  loadbalancer:
+  spy_loadbalancer:
     ports:
      - "80:80"
-  mailcatcher:
-    image: schickling/mailcatcher
-    container_name: mailcatcher
-    ports:
-      - 1080:1080
-  redisui:
+  spy_mailcatcher:
+   image: schickling/mailcatcher
+   container_name: spy_mailcatcher
+   ports:
+     - 1080:1080
+  spy_redisui:
     image: tenstartups/redis-commander
-    container_name: redisui
+    container_name: spy_redisui
     command: --redis-host redis
     links:
-      - redis:redis
+      - spy_redis:redis
     ports:
       - "8081:8081"

@@ -4,8 +4,11 @@
 namespace Nexus\Project\Communication\Command;
 
 
-use Xervice\Console\Command\AbstractCommand;
+use Xervice\Console\Business\Model\Command\AbstractCommand;
 
+/**
+ * @method \Nexus\Project\Communication\ProjectCommunicationFactory getFactory()
+ */
 abstract class AbstractNexusCliCommand extends AbstractCommand
 {
     /**
@@ -13,7 +16,6 @@ abstract class AbstractNexusCliCommand extends AbstractCommand
      * @param mixed ...$params
      *
      * @return string
-     * @throws \Core\Locator\Dynamic\ServiceNotParseable
      */
     protected function runNexusCli(string $command, ...$params)
     {

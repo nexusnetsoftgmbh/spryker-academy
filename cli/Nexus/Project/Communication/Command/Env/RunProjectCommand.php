@@ -31,7 +31,7 @@ class RunProjectCommand extends AbstractNexusCliCommand
     {
         $response = '';
 
-        $response .= $this->runNexusCli('docker:volume:create projectdata dbdata elasticdata redisdata');
+        $response .= $this->runNexusCli('docker:volume:create spy_projectdata spy_dbdata spy_elasticdata spy_redisdata');
         $response .= $this->runNexusCli('docker:compose:up docker-compose.yaml docker-local.yaml');
 
         if ($output->isVerbose()) {

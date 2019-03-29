@@ -32,7 +32,7 @@ class RmProjectCommand extends AbstractNexusCliCommand
         $response = '';
 
         $response .= $this->runNexusCli('docker:compose:rm docker-compose.yaml docker-local.yaml');
-        $response .= $this->runNexusCli('docker:volume:rm projectdata dbdata elasticdata redisdata');
+        $response .= $this->runNexusCli('docker:volume:rm spy_projectdata spy_dbdata spy_elasticdata spy_redisdata');
 
         if ($output->isVerbose()) {
             $output->writeln($response);

@@ -56,6 +56,9 @@ sections:
         generate-transfers:
             command: "vendor/bin/console transfer:generate"
 
+        generate-transfer-databuilders:
+            command: "vendor/bin/console transfer:databuilder:generate"
+
         generate-ide-auto-completion:
             command: "vendor/bin/console dev:ide:generate-auto-completion"
 
@@ -66,6 +69,9 @@ sections:
 
         navigation-cache-warmup:
             command: "vendor/bin/console navigation:build-cache"
+
+        rest-request-validation-cache-warmup:
+            command: "vendor/bin/console glue:rest:build-request-validation-cache"
 
 
     queue-flush:
@@ -251,5 +257,11 @@ sections:
 
         zed-build-frontend:
             command: "vendor/bin/console frontend:zed:build"
+            groups:
+                - zed
+
+    rest:
+        generate-documentation:
+            command: "vendor/bin/console rest-api:generate:documentation"
             groups:
                 - zed
