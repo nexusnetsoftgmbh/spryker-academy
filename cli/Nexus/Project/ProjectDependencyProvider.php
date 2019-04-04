@@ -8,6 +8,7 @@ use Nexus\Project\Communication\Command\Dumper\DumpProjectCommand;
 use Nexus\Project\Communication\Command\Dumper\RestoreProjectCommand;
 use Nexus\Project\Communication\Command\Env\RmProjectCommand;
 use Nexus\Project\Communication\Command\Env\RunProjectCommand;
+use Nexus\Project\Communication\Command\Env\RunVolumeProjectCommand;
 use Nexus\Project\Communication\Command\Env\XdebugDeactivateProjectCommand;
 use Nexus\Project\Communication\Command\Env\XdebugProjectCommand;
 use Nexus\Project\Communication\Command\General\InitProjectCommand;
@@ -53,6 +54,7 @@ class ProjectDependencyProvider extends AbstractDependencyProvider
         return [
             new InitProjectCommand(),
             new RunProjectCommand(),
+            new RunVolumeProjectCommand()
             new RmProjectCommand(),
             new InstallProjectCommand(),
             new ConsoleProjectCommand(),
