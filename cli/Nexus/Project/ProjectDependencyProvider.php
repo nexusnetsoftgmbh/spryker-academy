@@ -54,7 +54,7 @@ class ProjectDependencyProvider extends AbstractDependencyProvider
         return [
             new InitProjectCommand(),
             new RunProjectCommand(),
-            new RunVolumeProjectCommand()
+            new RunVolumeProjectCommand(),
             new RmProjectCommand(),
             new InstallProjectCommand(),
             new ConsoleProjectCommand(),
