@@ -1,6 +1,9 @@
 # IDE
 /.idea
 
+# Mib
+/syn2*.sh
+
 # NXS CLI
 /cli/Generated/*
 /dump
