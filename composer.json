@@ -3,7 +3,7 @@
   "description": "Spryker Academy",
   "license": "MIT",
   "require": {
-    "nexusnetsoftgmbh/nxscli-spryker": "^2.1.0"
+    "nexusnetsoftgmbh/nxscli-spryker": "^2.2.0"
   },
   "require-dev": {
     "xervice/development": "*"
