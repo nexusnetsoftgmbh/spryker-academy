@@ -144,24 +144,6 @@ services:
     volumes:
       - ./env/nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./env/nginx/loadbalancer.conf:/etc/nginx/conf.d/loadbalancer.conf
-    networks:
-      default:
-        aliases:
-          - "www.de.suite.local"
-          - "www-test.de.suite.local"
-          - "api.de.suite.local"
-          - "zed.de.suite.local"
-          - "zed-test.de.suite.local"
-          - "www.at.suite.local"
-          - "www-test.at.suite.local"
-          - "api.at.suite.local"
-          - "zed.at.suite.local"
-          - "zed-test.at.suite.local"
-          - "www.us.suite.local"
-          - "www-test.us.suite.local"
-          - "api.us.suite.local"
-          - "zed.us.suite.local"
-          - "zed-test.us.suite.local"
   spy_yves:
     image: nginx
     container_name: spy_yves
