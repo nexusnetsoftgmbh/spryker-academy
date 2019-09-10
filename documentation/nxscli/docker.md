@@ -47,17 +47,17 @@ In your local setup you have to use the config_local.dist.php and copy it to con
 ## Domains and Hosts
 
 You can reach the (DE) store with:  
-* http://www.de.suite.local (zed)
+* http://www.de.suite.local (yves)
 * http://zed.de.suite.local (zed)
 * http://api.de.suite.local (api)
 
 You can reach the (AT) store with:  
-* http://www.at.suite.local (zed)
+* http://www.at.suite.local (yves)
 * http://zed.at.suite.local (zed)
 * http://api.at.suite.local (api)
 
 You can reach the (US) store with:  
-* http://www.us.suite.local (zed)
+* http://www.us.suite.local (yves)
 * http://zed.us.suite.local (zed)
 * http://api.us.suite.local (api)
 
