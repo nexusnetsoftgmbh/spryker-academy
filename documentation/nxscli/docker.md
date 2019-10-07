@@ -11,6 +11,16 @@
   
   # alternative to docker:cp
   rsync -av -e 'ssh -p 2222' --exclude=vendor/ ./current/ root@127.0.0.1:/data/shop/development/current/
+``` 
+  
+## Run from dump:  
+```  
+  composer install  
+  vendor/bin/nxscli project:init  
+  vendor/bin/nxscli project:env:run  
+  docker exec spy_php bash -c 'composer global require hirak/prestissimo'  
+  vendor/bin/nxscli project:restore local
+  vendor/bin/nxscli project:spryker:deploy  
 ```  
 
 
