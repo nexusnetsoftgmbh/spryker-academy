@@ -1,17 +1,17 @@
 <?php
 
 use Monolog\Logger;
-use Pyz\Shared\Mail\MailConstants;
 use Spryker\Client\RabbitMq\Model\RabbitMqAdapter;
 use Spryker\Glue\Log\Plugin\GlueLoggerConfigPlugin;
 use Spryker\Service\FlysystemLocalFileSystem\Plugin\Flysystem\LocalFilesystemBuilderPlugin;
 use Spryker\Shared\Acl\AclConstants;
+use Spryker\Shared\Api\ApiConstants;
 use Spryker\Shared\Application\ApplicationConstants;
 use Spryker\Shared\Auth\AuthConstants;
-use Spryker\Shared\Cms\CmsConstants;
 use Spryker\Shared\CmsGui\CmsGuiConstants;
 use Spryker\Shared\Collector\CollectorConstants;
 use Spryker\Shared\Customer\CustomerConstants;
+use Spryker\Shared\DocumentationGeneratorRestApi\DocumentationGeneratorRestApiConstants;
 use Spryker\Shared\DummyPayment\DummyPaymentConfig;
 use Spryker\Shared\ErrorHandler\ErrorHandlerConstants;
 use Spryker\Shared\ErrorHandler\ErrorRenderer\WebHtmlErrorRenderer;
@@ -27,20 +27,25 @@ use Spryker\Shared\Kernel\KernelConstants;
 use Spryker\Shared\Kernel\Store;
 use Spryker\Shared\Log\LogConstants;
 use Spryker\Shared\Monitoring\MonitoringConstants;
+use Spryker\Shared\Nopayment\NopaymentConfig;
+use Spryker\Shared\Nopayment\NopaymentConstants;
 use Spryker\Shared\Oauth\OauthConstants;
-use Spryker\Shared\OauthCustomerConnector\OauthCustomerConnectorConstants;
 use Spryker\Shared\Oms\OmsConstants;
 use Spryker\Shared\Propel\PropelConstants;
 use Spryker\Shared\Queue\QueueConfig;
 use Spryker\Shared\Queue\QueueConstants;
 use Spryker\Shared\Quote\QuoteConstants;
-use Spryker\Shared\RabbitMq\RabbitMqEnv;
+use Spryker\Shared\Router\RouterConstants;
 use Spryker\Shared\Sales\SalesConstants;
 use Spryker\Shared\Search\SearchConstants;
 use Spryker\Shared\SequenceNumber\SequenceNumberConstants;
 use Spryker\Shared\Session\SessionConfig;
 use Spryker\Shared\Session\SessionConstants;
+use Spryker\Shared\SessionFile\SessionFileConstants;
+use Spryker\Shared\SessionRedis\SessionRedisConfig;
+use Spryker\Shared\SessionRedis\SessionRedisConstants;
 use Spryker\Shared\Storage\StorageConstants;
+use Spryker\Shared\StorageRedis\StorageRedisConstants;
 use Spryker\Shared\Tax\TaxConstants;
 use Spryker\Shared\Translator\TranslatorConstants;
 use Spryker\Shared\Twig\TwigConstants;
@@ -48,10 +53,15 @@ use Spryker\Shared\User\UserConstants;
 use Spryker\Shared\ZedNavigation\ZedNavigationConstants;
 use Spryker\Shared\ZedRequest\ZedRequestConstants;
 use Spryker\Yves\Log\Plugin\YvesLoggerConfigPlugin;
+use Spryker\Zed\GiftCard\GiftCardConfig;
 use Spryker\Zed\Log\Communication\Plugin\ZedLoggerConfigPlugin;
 use Spryker\Zed\Oms\OmsConfig;
 use Spryker\Zed\Propel\PropelConfig;
 use SprykerEco\Shared\Loggly\LogglyConstants;
+use SprykerShop\Shared\CalculationPage\CalculationPageConstants;
+use SprykerShop\Shared\ErrorPage\ErrorPageConstants;
+use SprykerShop\Shared\ShopApplication\ShopApplicationConstants;
+use SprykerShop\Shared\ShopUi\ShopUiConstants;
 use Twig\Cache\FilesystemCache;
 
 $CURRENT_STORE = Store::getInstance()->getStoreName();
@@ -92,10 +102,6 @@ $config[PropelConstants::PROPEL_DEBUG] = false;
 $config[UserConstants::USER_SYSTEM_USERS] = [
     'yves_system',
 ];
-// For a better performance you can turn off Zed authentication
-$AUTH_ZED_ENABLED = false;
-$config[AuthConstants::AUTH_ZED_ENABLED] = $AUTH_ZED_ENABLED;
-$config[ZedRequestConstants::AUTH_ZED_ENABLED] = $AUTH_ZED_ENABLED;
 $config[AuthConstants::AUTH_DEFAULT_CREDENTIALS] = [
     'yves_system' => [
         'rules' => [
@@ -156,15 +162,22 @@ $config[AclConstants::ACL_DEFAULT_CREDENTIALS] = [
 ];
 
 // ---------- Elasticsearch
-$config[SearchConstants::ELASTICA_PARAMETER__HOST] = getenv('ES_SERVER');
-$config[SearchConstants::ELASTICA_PARAMETER__TRANSPORT] = 'http';
-$config[SearchConstants::ELASTICA_PARAMETER__PORT] = '9200';
-$config[SearchConstants::ELASTICA_PARAMETER__AUTH_HEADER] = null;
-$config[SearchConstants::ELASTICA_PARAMETER__INDEX_NAME] = null;
-$config[CollectorConstants::ELASTICA_PARAMETER__INDEX_NAME] = null;
-$config[SearchConstants::ELASTICA_PARAMETER__DOCUMENT_TYPE] = 'page';
-$config[CollectorConstants::ELASTICA_PARAMETER__DOCUMENT_TYPE] = 'page';
-$config[SearchConstants::ELASTICA_PARAMETER__EXTRA] = [];
+$ELASTICA_HOST = getenv('ES_SERVER');
+$config[SearchConstants::ELASTICA_PARAMETER__HOST] = $ELASTICA_HOST;
+$ELASTICA_TRANSPORT_PROTOCOL = 'http';
+$config[SearchConstants::ELASTICA_PARAMETER__TRANSPORT] = $ELASTICA_TRANSPORT_PROTOCOL;
+$ELASTICA_PORT = '9200';
+$config[SearchConstants::ELASTICA_PARAMETER__PORT] = $ELASTICA_PORT;
+$ELASTICA_AUTH_HEADER = null;
+$config[SearchConstants::ELASTICA_PARAMETER__AUTH_HEADER] = $ELASTICA_AUTH_HEADER;
+$ELASTICA_INDEX_NAME = null;// Store related config
+$config[SearchConstants::ELASTICA_PARAMETER__INDEX_NAME] = $ELASTICA_INDEX_NAME;
+$config[CollectorConstants::ELASTICA_PARAMETER__INDEX_NAME] = $ELASTICA_INDEX_NAME;
+$ELASTICA_DOCUMENT_TYPE = 'page';
+$config[SearchConstants::ELASTICA_PARAMETER__DOCUMENT_TYPE] = $ELASTICA_DOCUMENT_TYPE;
+$config[CollectorConstants::ELASTICA_PARAMETER__DOCUMENT_TYPE] = $ELASTICA_DOCUMENT_TYPE;
+$ELASTICA_PARAMETER__EXTRA = [];
+$config[SearchConstants::ELASTICA_PARAMETER__EXTRA] = $ELASTICA_PARAMETER__EXTRA;
 
 // ---------- Page search
 $config[SearchConstants::FULL_TEXT_BOOSTED_BOOSTING_VALUE] = 3;
@@ -174,9 +187,10 @@ $config[SearchConstants::SEARCH_INDEX_NAME_SUFFIX] = '';
 $config[TwigConstants::YVES_TWIG_OPTIONS] = [
     'cache' => new FilesystemCache(
         sprintf(
-            '%s/data/%s/cache/Yves/twig',
+            '%s/data/%s/cache/%s/twig',
             APPLICATION_ROOT_DIR,
-            $CURRENT_STORE
+            $CURRENT_STORE,
+            APPLICATION
         ),
         FilesystemCache::FORCE_BYTECODE_INVALIDATION
     ),
@@ -184,20 +198,21 @@ $config[TwigConstants::YVES_TWIG_OPTIONS] = [
 $config[TwigConstants::ZED_TWIG_OPTIONS] = [
     'cache' => new FilesystemCache(
         sprintf(
-            '%s/data/%s/cache/Zed/twig',
+            '%s/data/%s/cache/%s/twig',
             APPLICATION_ROOT_DIR,
-            $CURRENT_STORE
+            $CURRENT_STORE,
+            APPLICATION
         ),
         FilesystemCache::FORCE_BYTECODE_INVALIDATION
     ),
 ];
 $config[TwigConstants::YVES_PATH_CACHE_FILE] = sprintf(
-    '%s/data/%s/cache/Yves/twig/.pathCache',
+    '%s/data/%s/cache/YVES/twig/.pathCache',
     APPLICATION_ROOT_DIR,
     $CURRENT_STORE
 );
 $config[TwigConstants::ZED_PATH_CACHE_FILE] = sprintf(
-    '%s/data/%s/cache/Zed/twig/.pathCache',
+    '%s/data/%s/cache/ZED/twig/.pathCache',
     APPLICATION_ROOT_DIR,
     $CURRENT_STORE
 );
@@ -207,29 +222,73 @@ $config[TwigConstants::ZED_PATH_CACHE_FILE] = sprintf(
 $config[ZedNavigationConstants::ZED_NAVIGATION_CACHE_ENABLED] = true;
 
 // ---------- Zed request
-$config[ZedRequestConstants::TRANSFER_USERNAME] = 'yves';
-$config[ZedRequestConstants::TRANSFER_PASSWORD] = 'o7&bg=Fz;nSslHBC';
 $config[ZedRequestConstants::TRANSFER_DEBUG_SESSION_FORWARD_ENABLED] = false;
 $config[ZedRequestConstants::TRANSFER_DEBUG_SESSION_NAME] = 'XDEBUG_SESSION';
 
 // ---------- KV storage
 $config[StorageConstants::STORAGE_KV_SOURCE] = 'redis';
-$config[StorageConstants::STORAGE_PERSISTENT_CONNECTION] = true;
+
+/**
+ * Data source names are used exclusively when set, e.g. no other Redis storage configuration will be used for the client.
+ *
+ * Example:
+ *   $config[StorageRedisConstants::STORAGE_REDIS_DATA_SOURCE_NAMES] = ['tcp://127.0.0.1:10009', 'tcp://10.0.0.1:6379']
+ */
+//$config[StorageRedisConstants::STORAGE_REDIS_DATA_SOURCE_NAMES] = [];
+
+$config[StorageRedisConstants::STORAGE_REDIS_PERSISTENT_CONNECTION] = true;
+$config[StorageRedisConstants::STORAGE_REDIS_PROTOCOL] = 'tcp';
+$config[StorageRedisConstants::STORAGE_REDIS_HOST] = getenv('REDIS_DATA_SERVER');
+$config[StorageRedisConstants::STORAGE_REDIS_PORT] = 6379;
+$config[StorageRedisConstants::STORAGE_REDIS_PASSWORD] = false;
+$config[StorageRedisConstants::STORAGE_REDIS_DATABASE] = 0;
 
 // ---------- Session
-$config[SessionConstants::YVES_SESSION_SAVE_HANDLER] = SessionConfig::SESSION_HANDLER_REDIS_LOCKING;
+$config[SessionConstants::YVES_SESSION_SAVE_HANDLER] = SessionRedisConfig::SESSION_HANDLER_REDIS_LOCKING;
 $config[SessionConstants::YVES_SESSION_TIME_TO_LIVE] = SessionConfig::SESSION_LIFETIME_1_HOUR;
+$config[SessionRedisConstants::YVES_SESSION_TIME_TO_LIVE] = $config[SessionConstants::YVES_SESSION_TIME_TO_LIVE];
+$config[SessionFileConstants::YVES_SESSION_TIME_TO_LIVE] = $config[SessionConstants::YVES_SESSION_TIME_TO_LIVE];
 $config[SessionConstants::YVES_SESSION_COOKIE_TIME_TO_LIVE] = SessionConfig::SESSION_LIFETIME_0_5_HOUR;
-$config[SessionConstants::YVES_SESSION_FILE_PATH] = session_save_path();
-$config[SessionConstants::YVES_SESSION_PERSISTENT_CONNECTION] = $config[StorageConstants::STORAGE_PERSISTENT_CONNECTION];
-$config[SessionConstants::ZED_SESSION_SAVE_HANDLER] = SessionConfig::SESSION_HANDLER_REDIS;
+$config[SessionFileConstants::YVES_SESSION_FILE_PATH] = session_save_path();
+$config[SessionConstants::YVES_SESSION_PERSISTENT_CONNECTION] = $config[StorageRedisConstants::STORAGE_REDIS_PERSISTENT_CONNECTION];
+$config[SessionConstants::ZED_SESSION_SAVE_HANDLER] = SessionRedisConfig::SESSION_HANDLER_REDIS;
 $config[SessionConstants::ZED_SESSION_TIME_TO_LIVE] = SessionConfig::SESSION_LIFETIME_1_HOUR;
+$config[SessionRedisConstants::ZED_SESSION_TIME_TO_LIVE] = $config[SessionConstants::ZED_SESSION_TIME_TO_LIVE];
+$config[SessionFileConstants::ZED_SESSION_TIME_TO_LIVE] = $config[SessionConstants::ZED_SESSION_TIME_TO_LIVE];
 $config[SessionConstants::ZED_SESSION_COOKIE_TIME_TO_LIVE] = SessionConfig::SESSION_LIFETIME_BROWSER_SESSION;
-$config[SessionConstants::ZED_SESSION_FILE_PATH] = session_save_path();
-$config[SessionConstants::ZED_SESSION_PERSISTENT_CONNECTION] = $config[StorageConstants::STORAGE_PERSISTENT_CONNECTION];
-$config[SessionConstants::SESSION_HANDLER_REDIS_LOCKING_TIMEOUT_MILLISECONDS] = 0;
-$config[SessionConstants::SESSION_HANDLER_REDIS_LOCKING_RETRY_DELAY_MICROSECONDS] = 0;
-$config[SessionConstants::SESSION_HANDLER_REDIS_LOCKING_LOCK_TTL_MILLISECONDS] = 0;
+$config[SessionFileConstants::ZED_SESSION_FILE_PATH] = session_save_path();
+$config[SessionConstants::ZED_SESSION_PERSISTENT_CONNECTION] = $config[StorageRedisConstants::STORAGE_REDIS_PERSISTENT_CONNECTION];
+$config[SessionRedisConstants::LOCKING_TIMEOUT_MILLISECONDS] = 0;
+$config[SessionRedisConstants::LOCKING_RETRY_DELAY_MICROSECONDS] = 0;
+$config[SessionRedisConstants::LOCKING_LOCK_TTL_MILLISECONDS] = 0;
+
+/**
+ * Data source names are used exclusively when set, e.g. no other Redis session configuration will be used for the client.
+ *
+ * Example:
+ *   $config[SessionRedisConstants::YVES_SESSION_REDIS_DATA_SOURCE_NAMES] = ['tcp://127.0.0.1:10009', 'tcp://10.0.0.1:6379']
+ */
+//$config[SessionRedisConstants::YVES_SESSION_REDIS_DATA_SOURCE_NAMES] = [];
+
+$config[SessionRedisConstants::YVES_SESSION_REDIS_PROTOCOL] = $config[StorageRedisConstants::STORAGE_REDIS_PROTOCOL];
+$config[SessionRedisConstants::YVES_SESSION_REDIS_HOST] = getenv('REDIS_SESSION_SERVER');
+$config[SessionRedisConstants::YVES_SESSION_REDIS_PORT] = $config[StorageRedisConstants::STORAGE_REDIS_PORT];
+$config[SessionRedisConstants::YVES_SESSION_REDIS_PASSWORD] = $config[StorageRedisConstants::STORAGE_REDIS_PASSWORD];
+$config[SessionRedisConstants::YVES_SESSION_REDIS_DATABASE] = 1;
+
+/**
+ * Data source names are used exclusively when set, e.g. no other Redis session configuration will be used for the client.
+ *
+ * Example:
+ *   $config[SessionRedisConstants::ZED_SESSION_REDIS_DATA_SOURCE_NAMES] = ['tcp://127.0.0.1:10009', 'tcp://10.0.0.1:6379']
+ */
+//$config[SessionRedisConstants::ZED_SESSION_REDIS_DATA_SOURCE_NAMES] = [];
+
+$config[SessionRedisConstants::ZED_SESSION_REDIS_PROTOCOL] = $config[StorageRedisConstants::STORAGE_REDIS_PROTOCOL];
+$config[SessionRedisConstants::ZED_SESSION_REDIS_HOST] = getenv('REDIS_SESSION_SERVER');
+$config[SessionRedisConstants::ZED_SESSION_REDIS_PORT] = $config[StorageRedisConstants::STORAGE_REDIS_PORT];
+$config[SessionRedisConstants::ZED_SESSION_REDIS_PASSWORD] = $config[StorageRedisConstants::STORAGE_REDIS_PASSWORD];
+$config[SessionRedisConstants::ZED_SESSION_REDIS_DATABASE] = 2;
 
 // ---------- Cookie
 $config[ApplicationConstants::YVES_COOKIE_DEVICE_ID_NAME] = 'did';
@@ -249,25 +308,15 @@ $HSTS_CONFIG = [
 $config[ApplicationConstants::ZED_HTTP_STRICT_TRANSPORT_SECURITY_CONFIG] = $HSTS_CONFIG;
 $config[ApplicationConstants::YVES_HTTP_STRICT_TRANSPORT_SECURITY_CONFIG] = $HSTS_CONFIG;
 
-// ---------- SSL
-$config[SessionConstants::YVES_SSL_ENABLED] = false;
-$config[ApplicationConstants::YVES_SSL_ENABLED] =
-$config[SessionConstants::YVES_SSL_ENABLED]
-    = false;
-$config[ApplicationConstants::YVES_SSL_EXCLUDED] = [
+// ---------- Router
+$config[RouterConstants::YVES_SSL_EXCLUDED_ROUTE_NAMES] = [
     'heartbeat' => '/heartbeat',
 ];
+$config[RouterConstants::ZED_SSL_EXCLUDED_ROUTE_NAMES] = ['heartbeat/index'];
 
+// ---------- SSL
+$config[SessionConstants::YVES_SSL_ENABLED] = false;
 $config[ZedRequestConstants::ZED_API_SSL_ENABLED] = false;
-$config[ApplicationConstants::ZED_SSL_ENABLED] =
-    $config[SessionConstants::ZED_SSL_ENABLED]
-    = false;
-$config[ApplicationConstants::ZED_SSL_EXCLUDED] = ['heartbeat/index'];
-
-// ---------- Theme
-$YVES_THEME = 'default';
-$config[TwigConstants::YVES_THEME] = $YVES_THEME;
-$config[CmsConstants::YVES_THEME] = $YVES_THEME;
 
 // ---------- Error handling
 $config[ErrorHandlerConstants::YVES_ERROR_PAGE] = APPLICATION_ROOT_DIR . '/public/Yves/errorpage/error.html';
@@ -313,28 +362,41 @@ $config[KernelConstants::AUTO_LOADER_UNRESOLVABLE_CACHE_PROVIDER] = File::class;
 $config[KernelConstants::DEPENDENCY_INJECTOR_YVES] = [
     'CheckoutPage' => [
         'DummyPayment',
+        NopaymentConfig::PAYMENT_PROVIDER_NAME,
     ],
 ];
 $config[KernelConstants::DEPENDENCY_INJECTOR_ZED] = [
     'Payment' => [
         'DummyPayment',
+        GiftCardConfig::PROVIDER_NAME,
+        NopaymentConfig::PAYMENT_PROVIDER_NAME,
     ],
     'Oms' => [
         'DummyPayment',
+        GiftCardConfig::PROVIDER_NAME,
     ],
+];
+
+$config[NopaymentConstants::NO_PAYMENT_METHODS] = [
+    NopaymentConfig::PAYMENT_PROVIDER_NAME,
+];
+$config[NopaymentConstants::WHITELIST_PAYMENT_METHODS] = [
+    GiftCardConfig::PROVIDER_NAME,
 ];
 
 // ---------- State machine (OMS)
 $config[OmsConstants::PROCESS_LOCATION] = [
     OmsConfig::DEFAULT_PROCESS_LOCATION,
-    $config[KernelConstants::SPRYKER_ROOT] . '/dummy-payment/config/Zed/Oms',
 ];
 $config[OmsConstants::ACTIVE_PROCESSES] = [
     'DummyPayment01',
+    'Nopayment01',
 ];
 $config[SalesConstants::PAYMENT_METHOD_STATEMACHINE_MAPPING] = [
     DummyPaymentConfig::PAYMENT_METHOD_INVOICE => 'DummyPayment01',
     DummyPaymentConfig::PAYMENT_METHOD_CREDIT_CARD => 'DummyPayment01',
+    GiftCardConfig::PROVIDER_NAME => 'DummyPayment01',
+    NopaymentConfig::PAYMENT_PROVIDER_NAME => 'Nopayment01',
 ];
 
 // ---------- Queue
@@ -342,8 +404,6 @@ $config[QueueConstants::QUEUE_SERVER_ID] = (gethostname()) ?: php_uname('n');
 $config[QueueConstants::QUEUE_WORKER_INTERVAL_MILLISECONDS] = 1000;
 $config[QueueConstants::QUEUE_PROCESS_TRIGGER_INTERVAL_MICROSECONDS] = 1001;
 $config[QueueConstants::QUEUE_WORKER_MAX_THRESHOLD_SECONDS] = 59;
-$config[QueueConstants::QUEUE_WORKER_LOG_ACTIVE] = false;
-$config[QueueConstants::QUEUE_WORKER_LOOP] = false;
 
 /*
  * Queues can have different adapters and maximum worker number
@@ -373,12 +433,13 @@ $config[LogglyConstants::ERROR_QUEUE_NAME] = 'loggly-log-queue.error';
 
 // ---------- Event
 $config[EventConstants::EVENT_CHUNK] = 500;
+$config[EventConstants::MAX_RETRY_ON_FAIL] = 5;
 
 // ---------- EventBehavior
 $config[EventBehaviorConstants::EVENT_BEHAVIOR_TRIGGERING_ACTIVE] = true;
 
 // ---------- Customer
-$config[CustomerConstants::CUSTOMER_SECURED_PATTERN] = '(^/login_check$|^(/en|/de)?/customer($|/)|^(/en|/de)?/wishlist($|/)|^(/en|/de)?/shopping-list($|/)|^(/en|/de)?/company(?!/register)($|/)|^(/en|/de)?/multi-cart($|/)|^(/en|/de)?/shared-cart($|/)|^(/en|/de)?/cart(?!/add)($|/)|^(/en|/de)?/checkout($|/))';
+$config[CustomerConstants::CUSTOMER_SECURED_PATTERN] = '(^/login_check$|^(/en|/de)?/customer($|/)|^(/en|/de)?/wishlist($|/)|^(/en|/de)?/shopping-list($|/)|^(/en|/de)?/quote-request($|/)|^(/en|/de)?/comment($|/)|^(/en|/de)?/company(?!/register)($|/)|^(/en|/de)?/multi-cart($|/)|^(/en|/de)?/shared-cart($|/)|^(/en|/de)?/cart(?!/add)($|/)|^(/en|/de)?/checkout($|/))';
 $config[CustomerConstants::CUSTOMER_ANONYMOUS_PATTERN] = '^/.*';
 
 // ---------- Taxes
@@ -404,10 +465,8 @@ $config[GlueApplicationConstants::GLUE_APPLICATION_CORS_ALLOW_ORIGIN] = '';
 $config[OauthConstants::PRIVATE_KEY_PATH] = 'file://';
 $config[OauthConstants::PUBLIC_KEY_PATH] = 'file://';
 $config[OauthConstants::ENCRYPTION_KEY] = '';
-
-// ----------- AuthRestApi
-$config[OauthCustomerConnectorConstants::OAUTH_CLIENT_IDENTIFIER] = '';
-$config[OauthCustomerConnectorConstants::OAUTH_CLIENT_SECRET] = '';
+$config[OauthConstants::OAUTH_CLIENT_IDENTIFIER] = '';
+$config[OauthConstants::OAUTH_CLIENT_SECRET] = '';
 
 // ---------- FileSystem
 $config[FileSystemConstants::FILESYSTEM_SERVICE] = [
@@ -446,46 +505,30 @@ $config[TranslatorConstants::TRANSLATION_ZED_FILE_PATH_PATTERNS] = [
     APPLICATION_ROOT_DIR . '/data/translation/Zed/*/[a-z][a-z]_[A-Z][A-Z].csv',
 ];
 
-// ----------- RabbitMq
-$config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
-    'DE' => [
-        RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'DE-connection',
-        RabbitMqEnv::RABBITMQ_HOST => getenv('RABBITMQ_SERVER'),
-        RabbitMqEnv::RABBITMQ_PORT => '5672',
-        RabbitMqEnv::RABBITMQ_PASSWORD => getenv('RABBITMQ_VHOST_DE_PASS'),
-        RabbitMqEnv::RABBITMQ_USERNAME => getenv('RABBITMQ_VHOST_DE_USER'),
-        RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST_DE'),
-        RabbitMqEnv::RABBITMQ_STORE_NAMES => ['DE']
-    ],
-    'AT' => [
-        RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'AT-connection',
-        RabbitMqEnv::RABBITMQ_HOST => getenv('RABBITMQ_SERVER'),
-        RabbitMqEnv::RABBITMQ_PORT => '5672',
-        RabbitMqEnv::RABBITMQ_PASSWORD => getenv('RABBITMQ_VHOST_AT_PASS'),
-        RabbitMqEnv::RABBITMQ_USERNAME => getenv('RABBITMQ_VHOST_AT_USER'),
-        RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST_AT'),
-        RabbitMqEnv::RABBITMQ_STORE_NAMES => ['AT']
-    ],
-    'US' => [
-        RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'US-connection',
-        RabbitMqEnv::RABBITMQ_HOST => getenv('RABBITMQ_SERVER'),
-        RabbitMqEnv::RABBITMQ_PORT => '5672',
-        RabbitMqEnv::RABBITMQ_PASSWORD => getenv('RABBITMQ_VHOST_US_PASS'),
-        RabbitMqEnv::RABBITMQ_USERNAME => getenv('RABBITMQ_VHOST_US_USER'),
-        RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST_US'),
-        RabbitMqEnv::RABBITMQ_STORE_NAMES => ['US']
-    ]
-];
+// ----------- Yves assets
+$config[ShopUiConstants::YVES_ASSETS_URL_PATTERN] = sprintf('/assets/%s/%s/', $CURRENT_STORE, '%theme%');
 
-$config[QueueConstants::QUEUE_ADAPTER_CONFIGURATION_DEFAULT] = [
-    QueueConfig::CONFIG_QUEUE_ADAPTER => RabbitMqAdapter::class,
-    QueueConfig::CONFIG_MAX_WORKER_NUMBER => 2,
-];
+// ----------- Api
+$config[ApiConstants::ENABLE_API_DEBUG] = false;
 
-$config[QueueConstants::QUEUE_ADAPTER_CONFIGURATION][EventConstants::EVENT_QUEUE][QueueConfig::CONFIG_MAX_WORKER_NUMBER] = 5;
+// ----------- Kernel test
+$config[KernelConstants::ENABLE_CONTAINER_OVERRIDING] = false;
 
-// ----------- RabbitMq
-$config[MailConstants::SMTP_HOST] = getenv('SMTP_SERVER');
-$config[MailConstants::SMTP_PORT] = 1025;
-$config[MailConstants::SMTP_USERNAME] = '';
-$config[MailConstants::SMTP_PASSWORD] = '';
+// ----------- Calculation page
+$config[CalculationPageConstants::ENABLE_CART_DEBUG] = false;
+
+// ----------- Error page
+$config[ErrorPageConstants::ENABLE_ERROR_404_STACK_TRACE] = false;
+
+// ----------- Application
+$config[ApplicationConstants::TWIG_ENVIRONMENT_NAME]
+    = $config[ShopApplicationConstants::TWIG_ENVIRONMENT_NAME]
+    = APPLICATION_ENV;
+
+$config[ApplicationConstants::ENABLE_PRETTY_ERROR_HANDLER] = false;
+
+// ----------- Documentation generator
+$config[DocumentationGeneratorRestApiConstants::ENABLE_REST_API_DOCUMENTATION_GENERATION] = false;
+
+// ----------- HTTP Security
+$config[KernelConstants::STRICT_DOMAIN_REDIRECT] = true;

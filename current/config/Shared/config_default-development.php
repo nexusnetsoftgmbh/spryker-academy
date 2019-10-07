@@ -5,41 +5,57 @@
  */
 
 use Monolog\Logger;
+use Pyz\Shared\Console\ConsoleConstants;
+use Pyz\Shared\Scheduler\SchedulerConfig;
 use Spryker\Shared\Acl\AclConstants;
+use Spryker\Shared\Api\ApiConstants;
 use Spryker\Shared\Application\ApplicationConstants;
 use Spryker\Shared\Config\ConfigConstants;
+use Spryker\Shared\DocumentationGeneratorRestApi\DocumentationGeneratorRestApiConstants;
 use Spryker\Shared\ErrorHandler\ErrorHandlerConstants;
 use Spryker\Shared\ErrorHandler\ErrorRenderer\WebExceptionErrorRenderer;
+use Spryker\Shared\Event\EventConstants;
 use Spryker\Shared\GlueApplication\GlueApplicationConstants;
 use Spryker\Shared\Kernel\KernelConstants;
 use Spryker\Shared\Kernel\Store;
 use Spryker\Shared\Log\LogConstants;
 use Spryker\Shared\Oauth\OauthConstants;
-use Spryker\Shared\OauthCustomerConnector\OauthCustomerConnectorConstants;
 use Spryker\Shared\Propel\PropelConstants;
 use Spryker\Shared\PropelOrm\PropelOrmConstants;
 use Spryker\Shared\PropelQueryBuilder\PropelQueryBuilderConstants;
 use Spryker\Shared\RabbitMq\RabbitMqEnv;
+use Spryker\Shared\Router\RouterConstants;
+use Spryker\Shared\Scheduler\SchedulerConstants;
+use Spryker\Shared\SchedulerJenkins\SchedulerJenkinsConfig;
+use Spryker\Shared\SchedulerJenkins\SchedulerJenkinsConstants;
 use Spryker\Shared\Session\SessionConfig;
 use Spryker\Shared\Session\SessionConstants;
-use Spryker\Shared\Setup\SetupConstants;
-use Spryker\Shared\Storage\StorageConstants;
+use Spryker\Shared\SessionFile\SessionFileConstants;
+use Spryker\Shared\SessionRedis\SessionRedisConstants;
 use Spryker\Shared\WebProfiler\WebProfilerConstants;
 use Spryker\Shared\ZedNavigation\ZedNavigationConstants;
 use Spryker\Shared\ZedRequest\ZedRequestConstants;
+use SprykerShop\Shared\CalculationPage\CalculationPageConstants;
+use SprykerShop\Shared\ErrorPage\ErrorPageConstants;
+use SprykerShop\Shared\ShopApplication\ShopApplicationConstants;
 
 $CURRENT_STORE = Store::getInstance()->getStoreName();
 
 // ---------- General environment
 $config[KernelConstants::SPRYKER_ROOT] = APPLICATION_ROOT_DIR . '/vendor/spryker';
 $config[KernelConstants::STORE_PREFIX] = 'DEV';
-$config[ApplicationConstants::ENABLE_APPLICATION_DEBUG] = true;
+$config[ApplicationConstants::ENABLE_APPLICATION_DEBUG]
+    = $config[ShopApplicationConstants::ENABLE_APPLICATION_DEBUG]
+    = true;
+
 $config[WebProfilerConstants::ENABLE_WEB_PROFILER]
     = $config[ConfigConstants::ENABLE_WEB_PROFILER]
     = true;
 
-$config[ApplicationConstants::ZED_SSL_ENABLED] = false;
 $config[ApplicationConstants::YVES_SSL_ENABLED] = false;
+$config[ApplicationConstants::ZED_SSL_ENABLED] = false;
+$config[RouterConstants::YVES_IS_SSL_ENABLED] = false;
+$config[RouterConstants::ZED_IS_SSL_ENABLED] = false;
 
 // ---------- Propel
 $config[PropelConstants::PROPEL_DEBUG] = false;
@@ -51,13 +67,6 @@ $config[PropelConstants::ZED_DB_PORT] = 5432;
 $config[PropelConstants::ZED_DB_ENGINE] = $config[PropelConstants::ZED_DB_ENGINE_PGSQL];
 $config[PropelQueryBuilderConstants::ZED_DB_ENGINE] = $config[PropelConstants::ZED_DB_ENGINE_PGSQL];
 
-// ---------- Redis
-$config[StorageConstants::STORAGE_REDIS_PROTOCOL] = 'tcp';
-$config[StorageConstants::STORAGE_REDIS_HOST] = getenv('REDIS_DATA_SERVER');
-$config[StorageConstants::STORAGE_REDIS_PORT] = '6379';
-$config[StorageConstants::STORAGE_REDIS_PASSWORD] = false;
-$config[StorageConstants::STORAGE_REDIS_DATABASE] = 0;
-
 // ---------- RabbitMQ
 $config[RabbitMqEnv::RABBITMQ_API_HOST] = getenv('RABBITMQ_SERVER');
 $config[RabbitMqEnv::RABBITMQ_API_PORT] = '15672';
@@ -66,22 +75,24 @@ $config[RabbitMqEnv::RABBITMQ_API_PASSWORD] = getenv('RABBITMQ_ADMIN_PW');
 
 // ---------- Session
 $config[SessionConstants::YVES_SESSION_COOKIE_SECURE] = false;
-$config[SessionConstants::YVES_SESSION_REDIS_PROTOCOL] = $config[StorageConstants::STORAGE_REDIS_PROTOCOL];
-$config[SessionConstants::YVES_SESSION_REDIS_HOST] = getenv('REDIS_SESSION_SERVER');
-$config[SessionConstants::YVES_SESSION_REDIS_PORT] = $config[StorageConstants::STORAGE_REDIS_PORT];
-$config[SessionConstants::YVES_SESSION_REDIS_PASSWORD] = $config[StorageConstants::STORAGE_REDIS_PASSWORD];
-$config[SessionConstants::YVES_SESSION_REDIS_DATABASE] = 1;
 $config[SessionConstants::ZED_SESSION_COOKIE_SECURE] = false;
-$config[SessionConstants::ZED_SESSION_REDIS_PROTOCOL] = $config[SessionConstants::YVES_SESSION_REDIS_PROTOCOL];
-$config[SessionConstants::ZED_SESSION_REDIS_HOST] = getenv('REDIS_SESSION_SERVER');
-$config[SessionConstants::ZED_SESSION_REDIS_PORT] = $config[SessionConstants::YVES_SESSION_REDIS_PORT];
-$config[SessionConstants::ZED_SESSION_REDIS_PASSWORD] = $config[SessionConstants::YVES_SESSION_REDIS_PASSWORD];
-$config[SessionConstants::ZED_SESSION_REDIS_DATABASE] = 2;
 $config[SessionConstants::ZED_SESSION_TIME_TO_LIVE] = SessionConfig::SESSION_LIFETIME_1_YEAR;
+$config[SessionRedisConstants::ZED_SESSION_TIME_TO_LIVE] = $config[SessionConstants::ZED_SESSION_TIME_TO_LIVE];
+$config[SessionFileConstants::ZED_SESSION_TIME_TO_LIVE] = $config[SessionConstants::ZED_SESSION_TIME_TO_LIVE];
 
-// ---------- Jenkins
-$config[SetupConstants::JENKINS_BASE_URL] = sprintf('http://%s:8080/', getenv('JENKINS_SERVER'));
-$config[SetupConstants::JENKINS_DIRECTORY] = '/data/shop/development/shared/data/common/jenkins';
+// ---------- Scheduler
+$config[SchedulerConstants::ENABLED_SCHEDULERS] = [
+    SchedulerConfig::SCHEDULER_JENKINS,
+];
+$config[SchedulerJenkinsConstants::JENKINS_CONFIGURATION] = [
+    SchedulerConfig::SCHEDULER_JENKINS => [
+        SchedulerJenkinsConfig::SCHEDULER_JENKINS_BASE_URL => sprintf(
+            'http://%s:%s',
+            getenv('JENKINS_SERVER'),
+            '8080'
+        ),
+    ],
+];
 
 // ---------- Zed request
 $config[ZedRequestConstants::TRANSFER_DEBUG_SESSION_FORWARD_ENABLED] = true;
@@ -121,7 +132,26 @@ $config[GlueApplicationConstants::GLUE_APPLICATION_REST_DEBUG] = true;
 $config[OauthConstants::PRIVATE_KEY_PATH] = 'file://' . APPLICATION_ROOT_DIR . '/config/Zed/dev_only_private.key';
 $config[OauthConstants::PUBLIC_KEY_PATH] = 'file://' . APPLICATION_ROOT_DIR . '/config/Zed/dev_only_public.key';
 $config[OauthConstants::ENCRYPTION_KEY] = 'lxZFUEsBCJ2Yb14IF2ygAHI5N4+ZAUXXaSeeJm6+twsUmIen';
+$config[OauthConstants::OAUTH_CLIENT_IDENTIFIER] = 'frontend';
+$config[OauthConstants::OAUTH_CLIENT_SECRET] = 'abc123';
 
-// ----------- AuthRestApi
-$config[OauthCustomerConnectorConstants::OAUTH_CLIENT_IDENTIFIER] = 'frontend';
-$config[OauthCustomerConnectorConstants::OAUTH_CLIENT_SECRET] = 'abc123';
+// ---------- Api
+$config[ApiConstants::ENABLE_API_DEBUG] = true;
+
+// ---------- Event
+$config[EventConstants::LOGGER_ACTIVE] = true;
+
+// ---------- Calculation page
+$config[CalculationPageConstants::ENABLE_CART_DEBUG] = true;
+
+// ---------- Error page
+$config[ErrorPageConstants::ENABLE_ERROR_404_STACK_TRACE] = true;
+
+// ----------- Application
+$config[ApplicationConstants::ENABLE_PRETTY_ERROR_HANDLER] = true;
+
+// ---------- Console
+$config[ConsoleConstants::ENABLE_DEVELOPMENT_CONSOLE_COMMANDS] = true;
+
+// ----------- Documentation generator
+$config[DocumentationGeneratorRestApiConstants::ENABLE_REST_API_DOCUMENTATION_GENERATION] = true;

@@ -23,6 +23,8 @@ use Pyz\Zed\DataImport\Business\Model\Discount\DiscountWriterStep;
 use Pyz\Zed\DataImport\Business\Model\DiscountAmount\DiscountAmountWriterStep;
 use Pyz\Zed\DataImport\Business\Model\DiscountStore\DiscountStoreWriterStep;
 use Pyz\Zed\DataImport\Business\Model\DiscountVoucher\DiscountVoucherWriterStep;
+use Pyz\Zed\DataImport\Business\Model\GiftCard\GiftCardAbstractConfigurationWriterStep;
+use Pyz\Zed\DataImport\Business\Model\GiftCard\GiftCardConcreteConfigurationWriterStep;
 use Pyz\Zed\DataImport\Business\Model\Glossary\GlossaryWriterStep;
 use Pyz\Zed\DataImport\Business\Model\Locale\AddLocalesStep;
 use Pyz\Zed\DataImport\Business\Model\Locale\LocaleNameToIdLocaleStep;
@@ -60,6 +62,8 @@ use Pyz\Zed\DataImport\Business\Model\ProductConcrete\Writer\Sql\ProductConcrete
 use Pyz\Zed\DataImport\Business\Model\ProductConcrete\Writer\Sql\ProductConcreteSqlInterface;
 use Pyz\Zed\DataImport\Business\Model\ProductGroup\ProductGroupWriter;
 use Pyz\Zed\DataImport\Business\Model\ProductImage\ProductImageHydratorStep;
+use Pyz\Zed\DataImport\Business\Model\ProductImage\Repository\ProductImageRepository;
+use Pyz\Zed\DataImport\Business\Model\ProductImage\Repository\ProductImageRepositoryInterface;
 use Pyz\Zed\DataImport\Business\Model\ProductImage\Writer\ProductImageBulkPdoDataSetWriter;
 use Pyz\Zed\DataImport\Business\Model\ProductImage\Writer\ProductImagePropelDataSetWriter;
 use Pyz\Zed\DataImport\Business\Model\ProductImage\Writer\Sql\ProductImageSql;
@@ -104,7 +108,6 @@ use Pyz\Zed\DataImport\Communication\Plugin\ProductImage\ProductImagePropelWrite
 use Pyz\Zed\DataImport\Communication\Plugin\ProductPrice\ProductPricePropelWriterPlugin;
 use Pyz\Zed\DataImport\Communication\Plugin\ProductStock\ProductStockPropelWriterPlugin;
 use Pyz\Zed\DataImport\DataImportDependencyProvider;
-use Spryker\Service\UtilEncoding\UtilEncodingServiceInterface;
 use Spryker\Shared\Kernel\Store;
 use Spryker\Shared\ProductSearch\Code\KeyBuilder\FilterGlossaryKeyBuilder;
 use Spryker\Zed\Currency\Business\CurrencyFacadeInterface;
@@ -168,7 +171,9 @@ class DataImportBusinessFactory extends SprykerDataImportBusinessFactory
             ->addDataImporter($this->createCmsBlockStoreImporter())
             ->addDataImporter($this->createCmsBlockCategoryPositionImporter())
             ->addDataImporter($this->createCmsBlockCategoryImporter())
-            ->addDataImporter($this->createDiscountAmountImporter());
+            ->addDataImporter($this->createDiscountAmountImporter())
+            ->addDataImporter($this->createAbstractGiftCardConfigurationImporter())
+            ->addDataImporter($this->createConcreteGiftCardConfigurationImporter());
 
         $dataImporterCollection->addDataImporterPlugins($this->getDataImporterPlugins());
 
@@ -363,7 +368,9 @@ class DataImportBusinessFactory extends SprykerDataImportBusinessFactory
      */
     public function createProductImagePropelWriter(): DataSetWriterInterface
     {
-        return new ProductImagePropelDataSetWriter();
+        return new ProductImagePropelDataSetWriter(
+            $this->createProductImageRepository()
+        );
     }
 
     /**
@@ -628,6 +635,7 @@ class DataImportBusinessFactory extends SprykerDataImportBusinessFactory
         $dataSetStepBroker
             ->addStep(new DiscountStoreWriterStep());
         $dataImporter->addDataSetStepBroker($dataSetStepBroker);
+
         return $dataImporter;
     }
 
@@ -741,6 +749,36 @@ class DataImportBusinessFactory extends SprykerDataImportBusinessFactory
             ->addStep(new ProductStockHydratorStep());
         $dataImporter->addDataSetStepBroker($dataSetStepBroker)
             ->setDataSetWriter($this->createProductStockDataImportWriters());
+
+        return $dataImporter;
+    }
+
+    /**
+     * @return \Spryker\Zed\DataImport\Business\Model\DataImporterInterface|\Spryker\Zed\DataImport\Business\Model\DataSet\DataSetStepBrokerAwareInterface
+     */
+    protected function createAbstractGiftCardConfigurationImporter()
+    {
+        $dataImporter = $this->getCsvDataImporterFromConfig($this->getConfig()->getAbstractGiftCardProductConfigurationDataImporterConfiguration());
+
+        $dataSetStepBroker = $this->createTransactionAwareDataSetStepBroker(GiftCardAbstractConfigurationWriterStep::BULK_SIZE);
+        $dataSetStepBroker
+            ->addStep(new GiftCardAbstractConfigurationWriterStep($this->createProductRepository()));
+        $dataImporter->addDataSetStepBroker($dataSetStepBroker);
+
+        return $dataImporter;
+    }
+
+    /**
+     * @return \Spryker\Zed\DataImport\Business\Model\DataImporterInterface|\Spryker\Zed\DataImport\Business\Model\DataSet\DataSetStepBrokerAwareInterface
+     */
+    protected function createConcreteGiftCardConfigurationImporter()
+    {
+        $dataImporter = $this->getCsvDataImporterFromConfig($this->getConfig()->getConcreteGiftCardProductConfigurationDataImporterConfiguration());
+
+        $dataSetStepBroker = $this->createTransactionAwareDataSetStepBroker(GiftCardConcreteConfigurationWriterStep::BULK_SIZE);
+        $dataSetStepBroker
+            ->addStep(new GiftCardConcreteConfigurationWriterStep($this->createProductRepository()));
+        $dataImporter->addDataSetStepBroker($dataSetStepBroker);
 
         return $dataImporter;
     }
@@ -1465,18 +1503,18 @@ class DataImportBusinessFactory extends SprykerDataImportBusinessFactory
     }
 
     /**
-     * @return \Spryker\Service\UtilEncoding\UtilEncodingServiceInterface
-     */
-    public function getUtilEncodingService(): UtilEncodingServiceInterface
-    {
-        return $this->getProvidedDependency(DataImportDependencyProvider::SERVICE_UTIL_ENCODING);
-    }
-
-    /**
      * @return \Spryker\Zed\DataImport\Business\Model\DataImportStep\DataImportStepInterface
      */
     protected function createAddLocalesStep(): DataImportStepInterface
     {
         return new AddLocalesStep($this->getStore());
+    }
+
+    /**
+     * @return \Pyz\Zed\DataImport\Business\Model\ProductImage\Repository\ProductImageRepositoryInterface
+     */
+    public function createProductImageRepository(): ProductImageRepositoryInterface
+    {
+        return new ProductImageRepository();
     }
 }

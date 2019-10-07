@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Auto-generated group annotations
+ *
  * @group PyzTest
  * @group Yves
  * @group Checkout
@@ -125,6 +126,7 @@ class SuccessStepTest extends Unit
     {
         $checkoutPageConfigMock = $this->getMockBuilder(CheckoutPageConfig::class)->setMethods(['cleanCartAfterOrderCreation'])->getMock();
         $checkoutPageConfigMock->method('cleanCartAfterOrderCreation')->willReturn(true);
+
         return $checkoutPageConfigMock;
     }
 }

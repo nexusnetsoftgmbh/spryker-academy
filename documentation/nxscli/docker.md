@@ -1,33 +1,15 @@
 # Docker environment  
   
-## Use last build  
-```  
-  # First time  
-  composer install  
-  vendor/bin/nxscli project:init  
-  #####################
-  # !! Ignore this error:
-  # !! "ERROR: pull access denied for spryker_data, repository does not exist or may require 'docker login'"
-  ######################################
-  vendor/bin/nxscli project:env:run  
-  vendor/bin/nxscli project:restore ssh  
-  vendor/bin/nxscli project:spryker:deploy  
-  
-  # Update  
-  vendor/bin/nxscli project:restore ssh  
-  vendor/bin/nxscli project:spryker:deploy  
-```  
-  
-   
 ## Run from scratch:  
 ```  
   composer install  
   vendor/bin/nxscli project:init  
   vendor/bin/nxscli project:env:run  
   vendor/bin/nxscli docker:cp . spy_php:/data/shop/development/  
+  docker exec spy_php bash -c 'composer global require hirak/prestissimo'  
   vendor/bin/nxscli project:spryker:install  
   
-  # alternative to docker:cp:
+  # alternative to docker:cp
   rsync -av -e 'ssh -p 2222' --exclude=vendor/ ./current/ root@127.0.0.1:/data/shop/development/current/
 ```  
 
@@ -39,6 +21,14 @@
     # Example
     vendor/bin/nxscli pr:sp:co "transfer:generate" de -vvv
 ```
+
+
+## Run tests
+```
+docker exec -it spy_php bash
+APPLICATION_ENV=devtest vendor/bin/console code:test
+```
+
 
 
 ## Local config

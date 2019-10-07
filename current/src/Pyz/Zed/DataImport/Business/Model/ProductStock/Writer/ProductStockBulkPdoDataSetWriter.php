@@ -37,10 +37,19 @@ class ProductStockBulkPdoDataSetWriter implements DataSetWriterInterface
     protected const KEY_QUANTITY = 'qty';
     protected const KEY_IS_NEVER_OUT_OF_STOCK = 'is_never_out_of_stock';
 
+    /**
+     * @var array
+     */
     protected static $stockCollection = [];
 
+    /**
+     * @var array
+     */
     protected static $stockProductCollection = [];
 
+    /**
+     * @var array
+     */
     protected static $storeToStock = [];
 
     /**
@@ -299,6 +308,7 @@ class ProductStockBulkPdoDataSetWriter implements DataSetWriterInterface
             }
             $result[$sku][static::KEY_QUANTITY] = $quantity;
         }
+
         return $result;
     }
 

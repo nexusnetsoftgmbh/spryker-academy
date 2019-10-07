@@ -40,6 +40,7 @@ class ProductImageHydratorStep extends PublishAwareStep implements DataImportSte
     public const KEY_ID_PRODUCT_ABSTRACT = 'id_product_abstract';
     public const KEY_FK_PRODUCT_ABSTRACT = 'fk_product_abstract';
     public const KEY_SORT_ORDER = 'sort_order';
+    public const KEY_PRODUCT_IMAGE_KEY = 'product_image_key';
     public const IMAGE_TO_IMAGE_SET_RELATION_ORDER = 0;
     public const DATA_PRODUCT_IMAGE_SET_TRANSFER = 'DATA_PRODUCT_IMAGE_SET_TRANSFER';
     public const DATA_PRODUCT_IMAGE_TRANSFER = 'DATA_PRODUCT_IMAGE_TRANSFER';
@@ -69,8 +70,12 @@ class ProductImageHydratorStep extends PublishAwareStep implements DataImportSte
 
         if (!empty($dataSet[static::KEY_IMAGE_SET_FK_PRODUCT_ABSTRACT])) {
             $imageSetEntityTransfer->setFkProductAbstract($dataSet[static::KEY_IMAGE_SET_FK_PRODUCT_ABSTRACT]);
-        } elseif (!empty($dataSet[static::KEY_IMAGE_SET_FK_PRODUCT])) {
+            $imageSetEntityTransfer->setFkProduct(null);
+        }
+
+        if (!empty($dataSet[static::KEY_IMAGE_SET_FK_PRODUCT])) {
             $imageSetEntityTransfer->setFkProduct($dataSet[static::KEY_IMAGE_SET_FK_PRODUCT]);
+            $imageSetEntityTransfer->setFkProductAbstract(null);
         }
 
         if (isset($dataSet[static::KEY_IMAGE_SET_FK_LOCALE])) {
@@ -98,6 +103,7 @@ class ProductImageHydratorStep extends PublishAwareStep implements DataImportSte
         $imageEntityTransfer = new SpyProductImageEntityTransfer();
         $imageEntityTransfer->setExternalUrlLarge($dataSet[static::KEY_EXTERNAL_URL_LARGE]);
         $imageEntityTransfer->setExternalUrlSmall($dataSet[static::KEY_EXTERNAL_URL_SMALL]);
+        $imageEntityTransfer->setProductImageKey($dataSet[static::KEY_PRODUCT_IMAGE_KEY]);
 
         $dataSet[static::DATA_PRODUCT_IMAGE_TRANSFER] = $imageEntityTransfer;
     }
@@ -110,8 +116,22 @@ class ProductImageHydratorStep extends PublishAwareStep implements DataImportSte
     protected function importImageToImageSetRelation(DataSetInterface $dataSet): void
     {
         $imageToImageSetRelationEntityTransfer = new SpyProductImageSetToProductImageEntityTransfer();
-        $imageToImageSetRelationEntityTransfer->setSortOrder(static::IMAGE_TO_IMAGE_SET_RELATION_ORDER);
+        $imageToImageSetRelationEntityTransfer->setSortOrder($this->getSortOrder($dataSet));
 
         $dataSet[static::DATA_PRODUCT_IMAGE_TO_IMAGE_SET_RELATION_TRANSFER] = $imageToImageSetRelationEntityTransfer;
+    }
+
+    /**
+     * @param \Spryker\Zed\DataImport\Business\Model\DataSet\DataSetInterface $dataSet
+     *
+     * @return int
+     */
+    protected function getSortOrder(DataSetInterface $dataSet): int
+    {
+        if (isset($dataSet[static::KEY_SORT_ORDER]) && $dataSet[static::KEY_SORT_ORDER] >= 0) {
+            return (int)$dataSet[static::KEY_SORT_ORDER];
+        }
+
+        return static::IMAGE_TO_IMAGE_SET_RELATION_ORDER;
     }
 }

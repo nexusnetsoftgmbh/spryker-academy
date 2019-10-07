@@ -35,6 +35,7 @@ class InstallProjectCommand extends AbstractNexusCliCommand
         $response .= $this->runNexusCli('spryker:rabbitmq:addstore US development mate20mg spy_rabbitmq -vvv');
         $response .= $this->runNexusCli('spryker:rabbitmq:addstore US devtest mate20mg spy_rabbitmq -vvv');
         $response .= $this->runNexusCli('spryker:install "" "spy_php" "development" "-vvv"');
+        $response .= $this->runNexusCli('spryker:install "" "spy_php" "testing" "-vvv"');
         $response .= $this->runNexusCli('docker:exec spy_php "chown -Rf www-data:www-data /data" -vvv');
         $response .= $this->runNexusCli('docker:exec spy_php "chmod -Rf 0777 /data/shop/development/current/data" -vvv');
 

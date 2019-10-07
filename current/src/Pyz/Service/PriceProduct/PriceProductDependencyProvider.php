@@ -14,15 +14,17 @@ use Spryker\Service\PriceProductVolume\Plugin\PriceProductExtension\PriceProduct
 class PriceProductDependencyProvider extends SprykerPriceProductDependencyProvider
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return \Spryker\Service\PriceProductExtension\Dependency\Plugin\PriceProductFilterPluginInterface[]
      */
     protected function getPriceProductDecisionPlugins(): array
     {
         return array_merge([
-            new MerchantRelationshipPriceProductFilterPlugin(),
             new PriceProductVolumeFilterPlugin(),
+
+            // Should be placed after PriceProductVolumeFilterPlugin
+            new MerchantRelationshipPriceProductFilterPlugin(),
         ], parent::getPriceProductDecisionPlugins());
     }
 }

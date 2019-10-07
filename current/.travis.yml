@@ -13,14 +13,108 @@ matrix:
   fast_finish: true
   include:
     - php: "7.1"
+      dist: trusty
       env:
         - TEST_GROUP=without-acceptance
     - php: "7.1"
+      dist: trusty
       env:
         - TEST_GROUP=acceptance
     - php: "7.1"
+      dist: trusty
       env:
         - VALIDATION=1
+
+    - name: Docker / PHP 7.3 / PostgreSQL / Functional
+      os:
+        - linux
+      dist: bionic
+      language: minimal
+      env:
+        - PROGRESS_TYPE=plain
+        - SPRYKER_PHP_VERSION=7.3
+        - SPRYKER_DB_ENGINE=PGSQL
+        - SPRYKER_TEST_IN_BROWSER=phantomjs
+        - TRAVIS=1
+      addons:
+        hosts:
+          - yves.de.spryker.local
+          - zed.de.spryker.local
+          - glue.de.spryker.local
+          - queue.spryker.local
+          - scheduler.spryker.local
+        apt:
+          packages:
+            - apache2-utils
+            - apt-transport-https
+            - ca-certificates
+            - curl
+            - gnupg-agent
+            - pigz
+            - software-properties-common
+          sources:
+            - sourceline: "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+              key_url: https://download.docker.com/linux/ubuntu/gpg
+      install:
+        - echo eyAiZXhwZXJpbWVudGFsIiA6IHRydWUsICJmZWF0dXJlcyIgOiB7ICJidWlsZGtpdCI6IHRydWUgfSB9Cg==|base64 -d|sudo tee /etc/docker/daemon.json
+        - sudo apt-get install --only-upgrade docker-ce -y
+        - sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        - sudo chmod +x /usr/local/bin/docker-compose
+      script:
+        - git clone https://github.com/spryker/docker-sdk.git --single-branch --branch master ./docker
+        - docker/sdk boot
+        - docker/sdk up
+        - 'docker/sdk testing codecept run -c codeception.functional.yml -o "\"extensions: config: \SprykerTest\Shared\Testify\Helper\SuiteFilterHelper: inclusive: [PyzTest]\"" -o "\"extensions: config: \SprykerTest\Shared\Testify\Helper\SuiteFilterHelper: exclusive: [Api, Glue]\""'
+      before_install: skip
+      before_script: skip
+      after_script: skip
+
+    - name: Docker / PHP 7.3 / PostgreSQL / Glue
+      os:
+        - linux
+      dist: bionic
+      language: minimal
+      env:
+        - PROGRESS_TYPE=plain
+        - SPRYKER_PHP_VERSION=7.3
+        - SPRYKER_DB_ENGINE=PGSQL
+        - SPRYKER_TEST_IN_BROWSER=phantomjs
+        - TRAVIS=1
+      addons:
+        hosts:
+          - yves.de.spryker.local
+          - zed.de.spryker.local
+          - glue.de.spryker.local
+          - queue.spryker.local
+          - scheduler.spryker.local
+        apt:
+          packages:
+            - apache2-utils
+            - apt-transport-https
+            - ca-certificates
+            - curl
+            - gnupg-agent
+            - pigz
+            - software-properties-common
+          sources:
+            - sourceline: "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+              key_url: https://download.docker.com/linux/ubuntu/gpg
+      install:
+        - echo eyAiZXhwZXJpbWVudGFsIiA6IHRydWUsICJmZWF0dXJlcyIgOiB7ICJidWlsZGtpdCI6IHRydWUgfSB9Cg==|base64 -d|sudo tee /etc/docker/daemon.json
+        - sudo apt-get install --only-upgrade docker-ce -y
+        - sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        - sudo chmod +x /usr/local/bin/docker-compose
+      script:
+        - git clone https://github.com/spryker/docker-sdk.git --single-branch --branch master ./docker
+        - docker/sdk boot
+        - docker/sdk up
+        - docker/sdk testing codecept fixtures
+        - docker/sdk testing console queue:worker:start --stop-when-empty
+        - docker/sdk testing codecept run -c codeception.api.yml
+      before_install: skip
+      before_script: skip
+      after_script: skip
+
 addons:
   postgresql: 9.6
   mysql: 5.7
@@ -32,6 +126,7 @@ addons:
   hosts:
     - zed.de.spryker.test
     - www.de.spryker.test
+    - glue.de.spryker.test
 
 cache:
   directories:
@@ -60,7 +155,7 @@ install:
   - config/Shared/ci/travis/install_mailcatcher.sh
 
 before_script:
-  - nvm install 8
+  - nvm install 8 > /dev/null
 
   - mkdir -p shared/data/common/jenkins
   - mkdir -p shared/data/common/jenkins/jobs
@@ -81,7 +176,7 @@ before_script:
 
   - if [[ $TEST_GROUP == 'acceptance' ]] ; then config/Shared/ci/travis/acceptance_env.sh ; fi
   - if [[ $TEST_GROUP == 'acceptance' ]] ; then vendor/bin/install DE -r testing -v; fi
-  - if [[ $TEST_GROUP == 'without-acceptance' ]] ; then vendor/bin/install DE -r testing -x frontend -v; fi
+  - if [[ $TEST_GROUP == 'without-acceptance' ]] ; then vendor/bin/install DE -r testing -x frontend -x fixtures -v; fi
 
   - if [[ $VALIDATION == 1 ]] ; then vendor/bin/console transfer:generate ; fi
   - if [[ $VALIDATION == 1 ]] ; then vendor/bin/console propel:install ; fi
@@ -90,9 +185,11 @@ before_script:
   - if [[ $VALIDATION == 1 ]] ; then vendor/bin/codecept build --ansi ; fi
   - if [[ $VALIDATION == 1 ]] ; then vendor/bin/console transfer:databuilder:generate ; fi
   - if [[ $VALIDATION == 1 ]] ; then vendor/bin/console setup:search ; fi
+  - if [[ $VALIDATION == 1 ]] ; then vendor/bin/console frontend:project:install-dependencies ; fi
+  - if [[ $VALIDATION == 1 ]] ; then vendor/bin/console frontend:yves:install-dependencies ; fi
 
 script:
-  - if [[ $VALIDATION == 1 ]] ; then vendor/bin/phpstan analyze -c phpstan.neon src/ -l 4 ; fi
+  - if [[ $VALIDATION == 1 ]] ; then vendor/bin/phpstan analyze -l 5 -c phpstan.neon src/ ; fi
 
   - if [[ $VALIDATION == 1 ]] ; then vendor/bin/console propel:schema:validate ; fi
   - if [[ $VALIDATION == 1 ]] ; then vendor/bin/console propel:schema:validate-xml-names ; fi
@@ -100,9 +197,12 @@ script:
   - if [[ $VALIDATION == 1 ]] ; then vendor/bin/console code:sniff:style ; fi
   - if [[ $VALIDATION == 1 ]] ; then vendor/bin/phpmd src/ text vendor/spryker/architecture-sniffer/src/ruleset.xml --minimumpriority 2 ; fi
 
-  - vendor/bin/phantomjs --webdriver=4444 &
-  - if [[ $TEST_GROUP == 'without-acceptance' ]] ; then vendor/bin/codecept run -x Presentation ; fi
-  - if [[ $TEST_GROUP == 'acceptance' ]] ; then vendor/bin/codecept run -g Presentation ; fi
+  - vendor/bin/phantomjs --webdriver=4444 --disk-cache=true --load-images=false &
+  - if [[ $TEST_GROUP == 'without-acceptance' ]] ; then vendor/bin/codecept run -x Presentation -x EndToEnd ; fi
+  - if [[ $TEST_GROUP == 'acceptance' ]] ; then vendor/bin/codecept run -g Presentation -g EndToEnd; fi
+
+  - if [[ $VALIDATION == 1 ]] ; then node ./frontend/libs/stylelint ; fi
+  - if [[ $VALIDATION == 1 ]] ; then node ./frontend/libs/tslint stylish ; fi
 
 notifications:
   email: false

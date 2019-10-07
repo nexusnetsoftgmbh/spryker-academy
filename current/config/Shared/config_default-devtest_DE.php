@@ -9,6 +9,7 @@ use Spryker\Shared\Application\ApplicationConstants;
 use Spryker\Shared\Collector\CollectorConstants;
 use Spryker\Shared\Customer\CustomerConstants;
 use Spryker\Shared\Event\EventConstants;
+use Spryker\Shared\GlueApplication\GlueApplicationConstants;
 use Spryker\Shared\Newsletter\NewsletterConstants;
 use Spryker\Shared\ProductManagement\ProductManagementConstants;
 use Spryker\Shared\Propel\PropelConstants;
@@ -17,7 +18,11 @@ use Spryker\Shared\Queue\QueueConstants;
 use Spryker\Shared\RabbitMq\RabbitMqEnv;
 use Spryker\Shared\Search\SearchConstants;
 use Spryker\Shared\Session\SessionConstants;
+use Spryker\Shared\SessionRedis\SessionRedisConstants;
+use Spryker\Shared\Testify\TestifyConstants;
 use Spryker\Shared\ZedRequest\ZedRequestConstants;
+
+$domain = getenv('VM_PROJECT') ?: 'suite-nonsplit';
 
 // ---------- Yves host
 $config[ApplicationConstants::HOST_YVES] = 'www-test.de.suite.local';
@@ -82,6 +87,7 @@ $config[QueueConstants::QUEUE_ADAPTER_CONFIGURATION] = [
     ],
 ];
 
+// ----------- RabbitMq
 $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
     'DE' => [
         RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'DE-connection',
@@ -91,7 +97,7 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
         RabbitMqEnv::RABBITMQ_USERNAME => getenv('RABBITMQ_VHOST_DETEST_USER'),
         RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST_DETEST'),
         RabbitMqEnv::RABBITMQ_STORE_NAMES => ['DE'],
-        RabbitMqEnv::RABBITMQ_DEFAULT_CONNECTION => true
+        RabbitMqEnv::RABBITMQ_DEFAULT_CONNECTION => true,
     ],
     'AT' => [
         RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'AT-connection',
@@ -100,7 +106,7 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
         RabbitMqEnv::RABBITMQ_PASSWORD => getenv('RABBITMQ_VHOST_ATTEST_PASS'),
         RabbitMqEnv::RABBITMQ_USERNAME => getenv('RABBITMQ_VHOST_ATTEST_USER'),
         RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST_ATTEST'),
-        RabbitMqEnv::RABBITMQ_STORE_NAMES => ['AT']
+        RabbitMqEnv::RABBITMQ_STORE_NAMES => ['AT'],
     ],
     'US' => [
         RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'US-connection',
@@ -109,14 +115,20 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
         RabbitMqEnv::RABBITMQ_PASSWORD => getenv('RABBITMQ_VHOST_USTEST_PASS'),
         RabbitMqEnv::RABBITMQ_USERNAME => getenv('RABBITMQ_VHOST_USTEST_USER'),
         RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST_USTEST'),
-        RabbitMqEnv::RABBITMQ_STORE_NAMES => ['US']
+        RabbitMqEnv::RABBITMQ_STORE_NAMES => ['US'],
     ],
 ];
 
 // ---------- Event
-$config[EventConstants::EVENT_CHUNK] = 100;
+$config[EventConstants::EVENT_CHUNK] = 500;
 
 // ---------- Session
 $config[SessionConstants::YVES_SESSION_COOKIE_DOMAIN] = $config[ApplicationConstants::HOST_YVES];
 $config[SessionConstants::ZED_SESSION_COOKIE_NAME] = $config[ApplicationConstants::HOST_ZED];
-$config[SessionConstants::YVES_SESSION_REDIS_DATABASE] = 5;
+$config[SessionRedisConstants::YVES_SESSION_REDIS_DATABASE] = 5;
+$config[SessionRedisConstants::ZED_SESSION_REDIS_DATABASE] = $config[SessionRedisConstants::YVES_SESSION_REDIS_DATABASE];
+
+// ----------- Glue Application
+$config[GlueApplicationConstants::GLUE_APPLICATION_DOMAIN] = sprintf('http://api-test.de.%s.local', $domain);
+$config[TestifyConstants::GLUE_APPLICATION_DOMAIN] = $config[GlueApplicationConstants::GLUE_APPLICATION_DOMAIN];
+$config[TestifyConstants::GLUE_OPEN_API_SCHEMA] = APPLICATION_SOURCE_DIR . '/Generated/Glue/Specification/spryker_rest_api.schema.yml';
