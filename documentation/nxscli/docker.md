@@ -23,26 +23,12 @@
   vendor/bin/nxscli project:spryker:deploy  
 ```  
 
-
-## Run Spryker console command
-```
-    vendor/bin/nxscli project:spryker:console <command> <store: de|us|at> <visibility: -vvv>
-    
-    # Example
-    vendor/bin/nxscli pr:sp:co "transfer:generate" de -vvv
-```
-
-
 ## Run tests
 ```
 docker exec -it spy_php bash
 APPLICATION_ENV=devtest vendor/bin/console code:test
 ```
 
-
-
-## Local config
-In your local setup you have to use the config_local.dist.php and copy it to config_local.php. Otherwise there will be problems with jenkins.
 
 ## Domains and Hosts
 
