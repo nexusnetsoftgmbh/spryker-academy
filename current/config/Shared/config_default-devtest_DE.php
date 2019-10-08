@@ -22,7 +22,7 @@ use Spryker\Shared\SessionRedis\SessionRedisConstants;
 use Spryker\Shared\Testify\TestifyConstants;
 use Spryker\Shared\ZedRequest\ZedRequestConstants;
 
-$domain = getenv('VM_PROJECT') ?: 'suite-nonsplit';
+$domain = getenv('VM_PROJECT') ?: 'suite';
 
 // ---------- Yves host
 $config[ApplicationConstants::HOST_YVES] = 'www-test.de.suite.local';

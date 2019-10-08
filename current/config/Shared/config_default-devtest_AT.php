@@ -22,7 +22,7 @@ use Spryker\Shared\SessionRedis\SessionRedisConstants;
 use Spryker\Shared\Testify\TestifyConstants;
 use Spryker\Shared\ZedRequest\ZedRequestConstants;
 
-$domain = getenv('VM_PROJECT') ?: 'suite-nonsplit';
+$domain = getenv('VM_PROJECT') ?: 'suite';
 
 // ---------- Yves host
 $config[ApplicationConstants::HOST_YVES] = 'www-test.at.suite.local';
@@ -97,7 +97,6 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
         RabbitMqEnv::RABBITMQ_USERNAME => getenv('RABBITMQ_VHOST_DETEST_USER'),
         RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST_DETEST'),
         RabbitMqEnv::RABBITMQ_STORE_NAMES => ['DE'],
-        RabbitMqEnv::RABBITMQ_DEFAULT_CONNECTION => true,
     ],
     'AT' => [
         RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'AT-connection',
@@ -107,6 +106,7 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
         RabbitMqEnv::RABBITMQ_USERNAME => getenv('RABBITMQ_VHOST_ATTEST_USER'),
         RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST_ATTEST'),
         RabbitMqEnv::RABBITMQ_STORE_NAMES => ['AT'],
+        RabbitMqEnv::RABBITMQ_DEFAULT_CONNECTION => true,
     ],
     'US' => [
         RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'US-connection',
