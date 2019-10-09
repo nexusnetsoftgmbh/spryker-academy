@@ -2,6 +2,7 @@
 <config>
     <!-- You can control navigation order here and add your custom navigation entries -->
     <dashboard/>
+    <antelope/>
     <sales/>
     <customer/>
     <category>

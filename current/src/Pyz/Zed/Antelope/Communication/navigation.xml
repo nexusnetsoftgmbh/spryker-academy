@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <antelope>
+        <label>Antelope</label>
+        <title>Antelope</title>
+        <uri>/antelope</uri>
+        <icon>fa-globe</icon>
+    </antelope>
+</config>
