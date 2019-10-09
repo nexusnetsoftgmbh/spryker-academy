@@ -58,7 +58,7 @@ $config[RouterConstants::YVES_IS_SSL_ENABLED] = false;
 $config[RouterConstants::ZED_IS_SSL_ENABLED] = false;
 
 // ---------- Propel
-$config[PropelConstants::PROPEL_DEBUG] = false;
+$config[PropelConstants::PROPEL_DEBUG] = true;
 $config[PropelOrmConstants::PROPEL_SHOW_EXTENDED_EXCEPTION] = true;
 $config[PropelConstants::ZED_DB_USERNAME] = getenv('POSTGRESQL_USER');
 $config[PropelConstants::ZED_DB_PASSWORD] = getenv('POSTGRESQL_PW');

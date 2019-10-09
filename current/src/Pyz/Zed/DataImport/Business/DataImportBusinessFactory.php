@@ -7,6 +7,9 @@
 
 namespace Pyz\Zed\DataImport\Business;
 
+use Pyz\Zed\DataImport\Business\Model\Antelope\AntelopeHydratorStep;
+use Pyz\Zed\DataImport\Business\Model\Antelope\Sql\AntelopeSql;
+use Pyz\Zed\DataImport\Business\Model\Antelope\Writer\AntelopePdoBulkWriter;
 use Pyz\Zed\DataImport\Business\Model\CategoryTemplate\CategoryTemplateWriterStep;
 use Pyz\Zed\DataImport\Business\Model\CmsBlock\Category\Repository\CategoryRepository;
 use Pyz\Zed\DataImport\Business\Model\CmsBlock\CmsBlockWriterStep;
@@ -136,6 +139,7 @@ class DataImportBusinessFactory extends SprykerDataImportBusinessFactory
         /** @var \Spryker\Zed\DataImport\Business\Model\DataImporterPluginCollectionInterface|\Spryker\Zed\DataImport\Business\Model\DataImporterCollectionInterface $dataImporterCollection */
         $dataImporterCollection = $this->createDataImporterCollection();
         $dataImporterCollection
+            ->addDataImporter($this->createAntelopeImporter())
             ->addDataImporter($this->createStoreImporter())
             ->addDataImporter($this->createCurrencyImporter())
             ->addDataImporter($this->createOrderSourceImporter())
@@ -191,6 +195,18 @@ class DataImportBusinessFactory extends SprykerDataImportBusinessFactory
     {
         return new ProductAbstractBulkPdoDataSetWriter(
             $this->createProductAbstractSql(),
+            $this->createPropelExecutor(),
+            $this->createDataFormatter()
+        );
+    }
+
+    /**
+     * @return \Pyz\Zed\DataImport\Business\Model\Antelope\Writer\AntelopePdoBulkWriter
+     */
+    protected function createAntelopePdoBulkWriter(): AntelopePdoBulkWriter
+    {
+        return new AntelopePdoBulkWriter(
+            new AntelopeSql(),
             $this->createPropelExecutor(),
             $this->createDataFormatter()
         );
@@ -324,6 +340,23 @@ class DataImportBusinessFactory extends SprykerDataImportBusinessFactory
     public function createPropelExecutor(): PropelExecutorInterface
     {
         return new PropelExecutor();
+    }
+
+    /**
+     * @return \Spryker\Zed\DataImport\Business\Model\DataImporterInterface|\Spryker\Zed\DataImport\Business\Model\DataSet\DataSetStepBrokerAwareInterface
+     */
+    protected function createAntelopeImporter()
+    {
+        $dataImporter = $this->getCsvDataImporterWriterAwareFromConfig($this->getConfig()->getAntelopeDataImporterConfiguration());
+
+        $dataSetStepBroker = $this->createTransactionAwareDataSetStepBroker();
+        $dataSetStepBroker
+            ->addStep(new AntelopeHydratorStep());
+
+        $dataImporter->addDataSetStepBroker($dataSetStepBroker);
+        $dataImporter->setDataSetWriter($this->createAntelopePdoBulkWriter());
+
+        return $dataImporter;
     }
 
     /**
