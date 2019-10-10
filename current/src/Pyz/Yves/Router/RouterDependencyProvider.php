@@ -7,6 +7,7 @@
 
 namespace Pyz\Yves\Router;
 
+use Pyz\Yves\AntelopeSearch\Plugin\Router\AntelopeSearchRouteProviderPlugin;
 use Pyz\Yves\ExampleProductSalePage\Plugin\Router\ExampleProductSaleRouteProviderPlugin;
 use Spryker\Yves\Router\Plugin\RouteManipulator\LanguageDefaultPostAddRouteManipulatorPlugin;
 use Spryker\Yves\Router\Plugin\RouteManipulator\SslPostAddRouteManipulatorPlugin;
@@ -88,6 +89,7 @@ class RouterDependencyProvider extends SprykerRouterDependencyProvider
         return [
             new ErrorPageRouteProviderPlugin(),
             new HomePageRouteProviderPlugin(),
+            new AntelopeSearchRouteProviderPlugin(),
             new CheckoutPageRouteProviderPlugin(),
             new CustomerPageRouteProviderPlugin(),
             new CustomerReorderWidgetRouteProviderPlugin(),
