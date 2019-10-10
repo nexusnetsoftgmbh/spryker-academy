@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Pyz\Zed\DataImport\Business\Model\Antelope\Writer;
 
+use Pyz\Shared\Antelope\AntelopeEvents;
 use Pyz\Zed\DataImport\Business\Model\Antelope\AntelopeHydratorStep;
 use Pyz\Zed\DataImport\Business\Model\Antelope\Sql\AntelopeSqlInterface;
 use Pyz\Zed\DataImport\Business\Model\DataFormatter\DataImportDataFormatterInterface;
@@ -10,6 +11,7 @@ use Pyz\Zed\DataImport\Business\Model\ProductConcrete\ProductConcreteHydratorSte
 use Pyz\Zed\DataImport\Business\Model\PropelExecutorInterface;
 use Spryker\Zed\DataImport\Business\Model\DataSet\DataSetInterface;
 use Spryker\Zed\DataImport\Business\Model\DataSet\DataSetWriterInterface;
+use Spryker\Zed\DataImport\Business\Model\Publisher\DataImporterPublisher;
 
 class AntelopePdoBulkWriter implements DataSetWriterInterface
 {
@@ -77,7 +79,11 @@ class AntelopePdoBulkWriter implements DataSetWriterInterface
             $name,
             $color
         ];
-        $this->propelExecutor->execute($sql, $parameters);
+        $storedEntities = $this->propelExecutor->execute($sql, $parameters);
+
+        foreach ($storedEntities as $entity) {
+            DataImporterPublisher::addEvent(AntelopeEvents::ENTITY_PYZ_ANTELOPE_CREATE, $entity['id_antelope']);
+        }
 
         $this->flushStorage();
     }

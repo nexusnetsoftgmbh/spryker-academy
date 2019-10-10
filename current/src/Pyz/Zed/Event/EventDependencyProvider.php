@@ -7,6 +7,7 @@
 
 namespace Pyz\Zed\Event;
 
+use Pyz\Zed\AntelopeSearch\Communication\Plugin\Event\Subscriber\AntelopeEventSubscriber;
 use Spryker\Zed\AvailabilityNotification\Communication\Plugin\Event\Subscriber\AvailabilityNotificationSubscriber;
 use Spryker\Zed\AvailabilityStorage\Communication\Plugin\Event\Subscriber\AvailabilityStorageEventSubscriber;
 use Spryker\Zed\CategoryImageStorage\Communication\Plugin\Event\Subscriber\CategoryImageStorageEventSubscriber;
@@ -129,6 +130,7 @@ class EventDependencyProvider extends SprykerEventDependencyProvider
         $eventSubscriberCollection->add(new ProductConcretePageSearchProductAbstractEventSubscriber());
         $eventSubscriberCollection->add(new ProductConcretePageSearchProductEventSubscriber());
         $eventSubscriberCollection->add(new ProductConcretePageSearchProductLocalizedAttributesEventSubscriber());
+        $eventSubscriberCollection->add(new AntelopeEventSubscriber());
 
         return $eventSubscriberCollection;
     }
