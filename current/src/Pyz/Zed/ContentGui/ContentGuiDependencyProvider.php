@@ -7,6 +7,8 @@
 
 namespace Pyz\Zed\ContentGui;
 
+use Pyz\Yves\CmsContentWidgetAntelopeConnector\Plugin\CmsContentWidget\AntelopeContentWidgetPlugin;
+use Pyz\Zed\CmsContentWidgetAntelopeConnector\Communication\Plugin\ContentGui\CmsContentWidgetAntelopeConnectorGuiEditorPlugin;
 use Spryker\Zed\ContentBannerGui\Communication\Plugin\ContentGui\ContentBannerContentGuiEditorPlugin;
 use Spryker\Zed\ContentBannerGui\Communication\Plugin\ContentGui\ContentBannerFormPlugin;
 use Spryker\Zed\ContentFileGui\Communication\Plugin\ContentGui\ContentFileListContentGuiEditorPlugin;
@@ -42,6 +44,7 @@ class ContentGuiDependencyProvider extends SprykerContentGuiDependencyProvider
             new ContentProductContentGuiEditorPlugin(),
             new ContentProductSetGuiEditorPlugin(),
             new ContentFileListContentGuiEditorPlugin(),
+            new CmsContentWidgetAntelopeConnectorGuiEditorPlugin()
         ];
     }
 }
